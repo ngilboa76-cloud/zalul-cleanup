@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>מעקב יום הניקיון הגדול 2026 | צלול</title>
+<link rel="icon" href="assets/zalul-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root{
+    --blue:#0871B9; --blue-d:#055a95; --blue-l:#1B9DD9; --aqua:#33b5c9;
+    --ink:#123; --muted:#5b6b78; --line:#e3ebf1; --bg:#f4f8fb; --card:#ffffff;
+    --good:#1c9d6b; --warn:#e08a1e;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Assistant',system-ui,Arial,sans-serif;background:
+    linear-gradient(180deg,#eaf4fb 0%, var(--bg) 240px);color:var(--ink);}
+  .wrap{max-width:1140px;margin:0 auto;padding:20px 18px 60px;}
+  /* header */
+  header.top{display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:18px 22px;box-shadow:0 6px 20px rgba(8,113,185,.06);}
+  header.top img{height:56px;width:auto}
+  .titles{flex:1;min-width:240px}
+  .titles h1{margin:0;font-size:26px;font-weight:800;color:var(--blue-d);letter-spacing:-.3px}
+  .titles .sub{margin-top:4px;font-size:14px;color:var(--muted);font-weight:600}
+  .updated{font-size:13px;color:var(--muted);margin-top:6px}
+  .updated b{color:var(--blue-d)}
+  .sync{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  button.btn{font-family:inherit;font-weight:700;font-size:14px;cursor:pointer;
+    border:none;border-radius:10px;padding:10px 16px;background:var(--blue);color:#fff;
+    box-shadow:0 3px 10px rgba(8,113,185,.25);transition:.15s;display:inline-flex;gap:8px;align-items:center}
+  button.btn:hover{background:var(--blue-d)}
+  button.btn.ghost{background:#eef5fb;color:var(--blue-d);box-shadow:none;border:1px solid var(--line)}
+  button.btn.ghost.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+  button.btn[disabled]{opacity:.55;cursor:default}
+  .spin{width:15px;height:15px;border:2px solid rgba(255,255,255,.5);border-top-color:#fff;
+    border-radius:50%;display:inline-block;animation:sp .7s linear infinite}
+  @keyframes sp{to{transform:rotate(360deg)}}
+
+  /* cards */
+  .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:20px 0}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;
+    box-shadow:0 4px 14px rgba(8,113,185,.05)}
+  .card .k{font-size:13px;color:var(--muted);font-weight:700}
+  .card .v{font-size:32px;font-weight:800;color:var(--blue-d);line-height:1.1;margin-top:4px}
+  .card .v small{font-size:14px;color:var(--muted);font-weight:700}
+
+  /* filter bar */
+  .filter{display:flex;gap:14px;align-items:end;flex-wrap:wrap;background:var(--card);
+    border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin-bottom:20px}
+  .filter .fld{display:flex;flex-direction:column;gap:5px}
+  .filter label{font-size:12px;font-weight:700;color:var(--muted)}
+  .filter input[type=date]{font-family:inherit;font-size:14px;padding:8px 10px;border:1px solid var(--line);
+    border-radius:9px;background:#fbfdff;color:var(--ink)}
+  .filter .quick{display:flex;gap:8px;margin-inline-start:auto;flex-wrap:wrap}
+  .filter .quick button{font-size:13px;padding:8px 12px}
+
+  /* layout */
+  .grid2{display:grid;grid-template-columns:1fr 1.15fr;gap:20px;align-items:start}
+  section.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:18px 20px;box-shadow:0 4px 14px rgba(8,113,185,.05)}
+  section.panel h2{margin:0 0 4px;font-size:18px;color:var(--blue-d);font-weight:800}
+  section.panel .hint{font-size:12.5px;color:var(--muted);margin-bottom:14px}
+  .chartbox{position:relative;height:300px}
+
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{padding:9px 10px;text-align:right}
+  thead th{font-size:12px;color:var(--muted);font-weight:700;border-bottom:2px solid var(--line);
+    position:sticky;top:0;background:var(--card)}
+  tbody tr{border-bottom:1px solid #eef3f7}
+  tbody tr:hover{background:#f7fbfe}
+  td.num,th.num{text-align:center;font-variant-numeric:tabular-nums;font-weight:700}
+  .rank{display:inline-flex;width:24px;height:24px;border-radius:50%;background:#eaf4fb;color:var(--blue-d);
+    align-items:center;justify-content:center;font-size:12px;font-weight:800}
+  .rank.top{background:var(--blue);color:#fff}
+  .beach{font-weight:700}
+  .region{font-size:12px;color:var(--muted);font-weight:600}
+  .bar{height:7px;border-radius:4px;background:linear-gradient(90deg,var(--blue-l),var(--blue));min-width:3px}
+  .barcell{width:120px}
+  .full-table-wrap{max-height:none;overflow:visible}
+  .foot{margin-top:26px;font-size:12.5px;color:var(--muted);text-align:center;line-height:1.7}
+  .foot code{background:#eef3f7;padding:1px 6px;border-radius:5px}
+  .msg{padding:14px 16px;border-radius:12px;font-weight:600;font-size:14px;margin:16px 0}
+  .msg.err{background:#fff2f0;color:#b4241a;border:1px solid #f4c9c3}
+  .msg.load{background:#eef7ff;color:var(--blue-d);border:1px solid #cfe6f7}
+  .pill{display:inline-block;font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;background:#eaf4fb;color:var(--blue-d)}
+  h2.sec{font-size:20px;color:var(--blue-d);margin:28px 4px 12px;font-weight:800}
+  h2.sec .pill{vertical-align:middle;margin-inline-start:8px}
+  @media(max-width:860px){
+    .cards{grid-template-columns:repeat(2,1fr)}
+    .grid2{grid-template-columns:1fr}
+    .titles h1{font-size:21px}
+    header.top img{height:44px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <img src="assets/zalul-logo.png" alt="צלול">
+    <div class="titles">
+      <h1>מעקב יום הניקיון הגדול 2026</h1>
+      <div class="sub">יום הניקיון הארצי · 16 באוקטובר 2026 · חופים ונחלים מצפון עד דרום</div>
+      <div class="updated" id="updated">טוען נתונים…</div>
+    </div>
+    <div class="sync">
+      <button class="btn" id="syncBtn" onclick="loadData()"><span id="syncIcon">⟳</span><span>סנכרון נתונים</span></button>
+    </div>
+  </header>
+
+  <div id="message"></div>
+
+  <div class="cards" id="cards">
+    <div class="card"><div class="k">סה״כ הרשמות (טפסים)</div><div class="v" id="cReg">–</div></div>
+    <div class="card"><div class="k">סה״כ משתתפים</div><div class="v" id="cPeople">–</div></div>
+    <div class="card"><div class="k">חופים / אתרים פעילים</div><div class="v" id="cSites">–</div></div>
+    <div class="card"><div class="k">קבוצות וארגונים</div><div class="v" id="cGroups">–</div></div>
+  </div>
+
+  <div class="filter">
+    <div class="fld"><label for="from">מתאריך הרשמה</label><input type="date" id="from" onchange="render()"></div>
+    <div class="fld"><label for="to">עד תאריך הרשמה</label><input type="date" id="to" onchange="render()"></div>
+    <div class="quick">
+      <button class="btn ghost active" data-range="all" onclick="quick('all',this)">הכל</button>
+      <button class="btn ghost" data-range="7" onclick="quick('7',this)">7 ימים אחרונים</button>
+      <button class="btn ghost" data-range="14" onclick="quick('14',this)">14 ימים אחרונים</button>
+    </div>
+  </div>
+
+  <h2 class="sec">תקציר מנהלים <span class="pill">כלל הנתונים</span></h2>
+  <div class="grid2">
+    <section class="panel">
+      <h2>התפלגות ההרשמות</h2>
+      <div class="hint">חלוקת כלל ההרשמות בין החופים המובילים (השאר מקובצים תחת "אחר").</div>
+      <div class="chartbox"><canvas id="pie"></canvas></div>
+    </section>
+    <section class="panel">
+      <h2>5 האתרים המובילים</h2>
+      <div class="hint">מדורגים לפי סך המשתתפים (כולל קבוצות וארגונים).</div>
+      <table>
+        <thead><tr><th class="num">#</th><th>אתר</th><th class="num">הרשמות</th><th class="num">משתתפים</th></tr></thead>
+        <tbody id="topBody"></tbody>
+      </table>
+    </section>
+  </div>
+
+  <h2 class="sec">כל האתרים · מצפון לדרום <span class="pill" id="nsCount"></span></h2>
+  <section class="panel full-table-wrap">
+    <div class="hint">סדר גיאוגרפי לפי קו רוחב בישראל, מהאתר הצפוני ביותר (נחל הבניאס) ועד אילת בדרום.</div>
+    <table>
+      <thead><tr><th class="num">#</th><th>אתר הניקיון</th><th>אזור</th><th class="num">הרשמות</th><th class="num">משתתפים</th><th>נפח</th></tr></thead>
+      <tbody id="nsBody"></tbody>
+    </table>
+  </section>
+
+  <div class="foot">
+    הנתונים נשאבים בזמן אמת מטופס ההרשמה (Google Sheets) ומתעדכנים בכל טעינה, בלחיצה על "סנכרון" ואוטומטית כל 5 דקות.<br>
+    ניקוי אוטומטי: שורות בדיקה מוסרות · הרשמות כפולות (אותו נרשם לאותו אתר) מאוחדות לרשומה אחת.<br>
+    צלול · עמותה להגנת הים, החופים והנחלים
+  </div>
+
+</div>
+
+<script>
+/* ============ CONFIG ============ */
+const SHEET_ID = "127UwKa55BD_Of_TbO7KFtik_r_f9Pd7CwCdiWCFRJIg";
+// Data source. Once the sheet is Published to web (File > Share > Publish to web > CSV),
+// paste that pub URL here. A ?csv=<url> query param overrides it (handy for testing).
+const PUBLISHED_CSV = "https://docs.google.com/spreadsheets/d/"+SHEET_ID+"/gviz/tq?tqx=out:csv";
+const CSV_URL = new URLSearchParams(location.search).get("csv") || PUBLISHED_CSV;
+const AUTO_REFRESH_MS = 5*60*1000;
+
+/* ============ GEOGRAPHY: north -> south (lat desc) ============
+   Each site: canonical display name, latitude, region label, and match keywords.
+   Matching finds the first entry whose keyword is contained in the raw sheet value,
+   so name variants / comma splits all collapse to one canonical site. */
+const SITES = [
+  {name:"נחל הבניאס – אצבע הגליל",           lat:33.25, region:"גליל עליון",   match:["בניאס"]},
+  {name:"בצת – מטה אשר",                      lat:33.06, region:"גליל מערבי",   match:["בצת"]},
+  {name:"שפך נחל נעמן – עכו",                 lat:32.92, region:"מפרץ חיפה",    match:["נעמן","עכו"]},
+  {name:"חוף אמנון – כנרת",                   lat:32.88, region:"כנרת",          match:["אמנון","כנרת"]},
+  {name:"נחל הקיבוצים – עמק הירדן",           lat:32.55, region:"עמק הירדן",    match:["הקיבוצים"]},
+  {name:"בת גלים – חיפה",                     lat:32.834,region:"חיפה",          match:["בת גלים"]},
+  {name:"חוף שקמונה – חיפה",                  lat:32.826,region:"חיפה",          match:["שקמונה"]},
+  {name:"פארק הכט – חיפה",                    lat:32.812,region:"חיפה",          match:["הכט"]},
+  {name:"נחל סעדיה – חיפה",                   lat:32.805,region:"חיפה",          match:["סעדיה"]},
+  {name:"חוף חלוצי התעשייה – חיפה",           lat:32.792,region:"חיפה",          match:["חלוצי"]},
+  {name:"ואדי לוטם – חיפה",                   lat:32.72, region:"חוף הכרמל",     match:["לוטם"]},
+  {name:"חוף המבצר – עתלית",                  lat:32.70, region:"חוף הכרמל",     match:["המבצר","עתלית"]},
+  {name:"נווה ים – חוף הכרמל",                lat:32.68, region:"חוף הכרמל",     match:["נווה ים"]},
+  {name:"חוף ג'סר א-זרקא",                    lat:32.535,region:"חוף הכרמל",     match:["זרקא","גסר","ג׳סר","ג'סר"]},
+  {name:"נחל עדה – גבעת עדה",                 lat:32.52, region:"רמות מנשה",     match:["נחל עדה","גבעת עדה"]},
+  {name:"אקוודוקט – קיסריה",                  lat:32.51, region:"קיסריה",        match:["אקוודוקט","קיסריה"]},
+  {name:"החוף של כושי – מכמורת",              lat:32.41, region:"עמק חפר",       match:["כושי","מכמורת"]},
+  {name:"חוף מאנו – נעורים",                  lat:32.39, region:"עמק חפר",       match:["מאנו","נעורים"]},
+  {name:"נחל פולג – נתניה",                   lat:32.283,region:"נתניה",         match:["נחל פולג"]},
+  {name:"חוף פולג – מוקד אדיר מסיקה (נתניה)", lat:32.281,region:"נתניה",         match:["אדיר מסיקה","חוף פולג"]},
+  {name:"מצוק סידנא עלי – הרצליה",            lat:32.17, region:"הרצליה",        match:["סידנא"]},
+  {name:"נחל גליל ים – הרצליה",               lat:32.163,region:"הרצליה",        match:["גליל ים"]},
+  {name:"נחל הדר – הוד השרון",                lat:32.155,region:"השרון",         match:["הדר"]},
+  {name:"חוף תל ברוך – תל אביב",              lat:32.13, region:"תל אביב",       match:["תל ברוך"]},
+  {name:"שפך הירקון – תל אביב",               lat:32.10, region:"תל אביב",       match:["הירקון"]},
+  {name:"בת ים – חוף הסלע",                   lat:32.01, region:"גוש דן",        match:["הסלע","בת ים"]},
+  {name:"חוף פלמחים",                         lat:31.93, region:"מרכז החוף",     match:["פלמחים"]},
+  {name:"חוף החשמל – אשדוד",                  lat:31.83, region:"אשדוד",         match:["החשמל"]},
+  {name:"חוף באר טוביה",                      lat:31.75, region:"דרום השפלה",    match:["באר טוביה"]},
+  {name:"חוף חופית – אשקלון",                 lat:31.66, region:"אשקלון",        match:["חופית","אשקלון"]},
+  {name:"נחל חווה – מצפה רמון",               lat:30.61, region:"נגב",           match:["חווה","מצפה רמון"]},
+  {name:"צלילת ניקיון – אילת",                lat:29.55, region:"אילת",          match:["אילת","צלילת"]},
+];
+
+/* ============ CSV PARSER (handles quotes, commas, newlines) ============ */
+function parseCSV(text){
+  const rows=[]; let row=[], field="", i=0, inQ=false;
+  while(i<text.length){
+    const c=text[i];
+    if(inQ){
+      if(c==='"'){ if(text[i+1]==='"'){field+='"';i+=2;continue;} inQ=false;i++;continue;}
+      field+=c;i++;continue;
+    }
+    if(c==='"'){inQ=true;i++;continue;}
+    if(c===','){row.push(field);field="";i++;continue;}
+    if(c==='\r'){i++;continue;}
+    if(c==='\n'){row.push(field);rows.push(row);row=[];field="";i++;continue;}
+    field+=c;i++;
+  }
+  if(field.length||row.length){row.push(field);rows.push(row);}
+  return rows;
+}
+
+/* ============ HELPERS ============ */
+function canonicalSite(raw){
+  const s=(raw||"").trim();
+  if(!s) return null;
+  for(const site of SITES){
+    for(const kw of site.match){ if(s.indexOf(kw)!==-1) return site; }
+  }
+  return {name:s, lat:-1, region:"לא ממופה", match:[], _unmapped:true};
+}
+function parseRegDate(raw){ // "DD/MM/YYYY HH:MM"
+  const m=(raw||"").trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  if(!m) return null;
+  return new Date(+m[3], +m[2]-1, +m[1]);
+}
+function digits(s){ return (s||"").replace(/\D/g,""); }
+function isTestRow(name,email){
+  const n=(name||""), e=(email||"").toLowerCase();
+  return n.indexOf("בדיקה")!==-1 || e.indexOf("eddr666")!==-1;
+}
+function fmtDateInput(d){
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+function heNum(n){ return n.toLocaleString("he-IL"); }
+
+/* ============ STATE ============ */
+let RECORDS=[];      // cleaned, deduped records: {site, date, people, type}
+let pieChart=null;
+
+/* ============ LOAD ============ */
+async function loadData(){
+  const btn=document.getElementById("syncBtn");
+  const icon=document.getElementById("syncIcon");
+  btn.disabled=true; icon.outerHTML='<span class="spin" id="syncIcon"></span>';
+  setMsg("load","טוען נתונים מהגיליון…");
+  try{
+    const res=await fetch(CSV_URL+(CSV_URL.indexOf("?")===-1?"?":"&")+"_cb="+Date.now());
+    if(!res.ok) throw new Error("HTTP "+res.status);
+    const text=await res.text();
+    const rows=parseCSV(text);
+    if(rows.length<2) throw new Error("no rows");
+    process(rows);
+    const now=new Date();
+    document.getElementById("updated").innerHTML =
+      "עודכן לאחרונה: <b>"+now.toLocaleDateString("he-IL")+" בשעה "+
+      now.toLocaleTimeString("he-IL",{hour:"2-digit",minute:"2-digit"})+"</b>";
+    clearMsg();
+    render();
+  }catch(err){
+    setMsg("err","שגיאה בשליפת הנתונים: "+err.message+
+      ". ודאו שהגיליון משותף כ״כל מי שיש לו את הקישור – מציג״.");
+  }finally{
+    const b=document.getElementById("syncBtn");
+    b.disabled=false;
+    document.getElementById("syncIcon").outerHTML='<span id="syncIcon">⟳</span>';
+  }
+}
+
+function process(rows){
+  // header index (row 0). Columns by position per the form.
+  // 0 date, 1 event, 2 location, 3 when, 4 preferred beach, 5 name, 6 email,
+  // 7 phone, 8 org, 9 participants, 10 type, 11 region, 12 past, 13 consent
+  const out=[]; const seen=new Set(); const unmapped=new Set();
+  for(let r=1;r<rows.length;r++){
+    const c=rows[r]; if(!c || c.length<7) continue;
+    const name=c[5], email=c[6], phone=c[7];
+    if(isTestRow(name,email)) continue;
+    const rawSite=(c[4]&&c[4].trim())?c[4]:c[1];
+    const site=canonicalSite(rawSite);
+    if(!site) continue;
+    if(site._unmapped) unmapped.add(rawSite.trim());
+    const date=parseRegDate(c[0]);
+    let ppl=parseInt(digits(c[9]),10); if(!ppl||ppl<1) ppl=1;
+    const type=(c[10]||"").trim();
+    // dedupe key: same registrant (phone or email) + same site
+    const id=(digits(phone)||(email||"").toLowerCase().trim())+"|"+site.name;
+    if(seen.has(id)) continue;
+    seen.add(id);
+    out.push({site:site.name, lat:site.lat, region:site.region,
+              date:date, people:ppl, type:type});
+  }
+  RECORDS=out;
+  if(unmapped.size) console.warn("אתרים שלא מופו גיאוגרפית:", [...unmapped]);
+  // set date filter bounds
+  const dates=out.map(x=>x.date).filter(Boolean).sort((a,b)=>a-b);
+  if(dates.length){
+    const from=document.getElementById("from"), to=document.getElementById("to");
+    if(!from.value) from.value=fmtDateInput(dates[0]);
+    if(!to.value)   to.value=fmtDateInput(dates[dates.length-1]);
+    from.min=to.min=fmtDateInput(dates[0]);
+    from.max=to.max=fmtDateInput(dates[dates.length-1]);
+  }
+}
+
+/* ============ RENDER ============ */
+function filtered(){
+  const f=document.getElementById("from").value;
+  const t=document.getElementById("to").value;
+  const from=f?new Date(f+"T00:00:00"):null;
+  const to=t?new Date(t+"T23:59:59"):null;
+  return RECORDS.filter(x=>{
+    if(!x.date) return true;
+    if(from && x.date<from) return false;
+    if(to && x.date>to) return false;
+    return true;
+  });
+}
+
+function aggregate(recs){
+  const map=new Map();
+  for(const x of recs){
+    let a=map.get(x.site);
+    if(!a){a={site:x.site,lat:x.lat,region:x.region,reg:0,people:0};map.set(x.site,a);}
+    a.reg++; a.people+=x.people;
+  }
+  return [...map.values()];
+}
+
+function render(){
+  const recs=filtered();
+  const agg=aggregate(recs);
+  const totReg=recs.length;
+  const totPeople=recs.reduce((s,x)=>s+x.people,0);
+  const groups=recs.filter(x=>x.type.indexOf("קבוצה")!==-1||x.type.indexOf("ארגון")!==-1).length;
+
+  document.getElementById("cReg").textContent=heNum(totReg);
+  document.getElementById("cPeople").textContent=heNum(totPeople);
+  document.getElementById("cSites").textContent=heNum(agg.length);
+  document.getElementById("cGroups").textContent=heNum(groups);
+
+  // ---- Top 5 by participants ----
+  const top=[...agg].sort((a,b)=>b.people-a.people||b.reg-a.reg).slice(0,5);
+  document.getElementById("topBody").innerHTML=top.map((a,i)=>
+    `<tr><td class="num"><span class="rank ${i===0?'top':''}">${i+1}</span></td>`+
+    `<td class="beach">${a.site}<div class="region">${a.region}</div></td>`+
+    `<td class="num">${heNum(a.reg)}</td><td class="num">${heNum(a.people)}</td></tr>`).join("");
+
+  // ---- Pie: registrations distribution, top 8 + other ----
+  const byReg=[...agg].sort((a,b)=>b.reg-a.reg);
+  const TOPN=8;
+  const head=byReg.slice(0,TOPN);
+  const restReg=byReg.slice(TOPN).reduce((s,a)=>s+a.reg,0);
+  const labels=head.map(a=>a.site); const data=head.map(a=>a.reg);
+  if(restReg>0){labels.push("אחר");data.push(restReg);}
+  const palette=["#0871B9","#1B9DD9","#33b5c9","#0a8f6f","#5aa9e6","#7bc4a4",
+                 "#055a95","#2bc0d8","#9fb8c9"];
+  drawPie(labels,data,palette);
+
+  // ---- North -> South full table ----
+  agg.sort((a,b)=> (b.lat)-(a.lat));
+  const maxPeople=Math.max(1,...agg.map(a=>a.people));
+  document.getElementById("nsCount").textContent=agg.length+" אתרים";
+  document.getElementById("nsBody").innerHTML=agg.map((a,i)=>
+    `<tr><td class="num">${i+1}</td>`+
+    `<td class="beach">${a.site}${a.lat<0?' <span class="pill">חדש</span>':''}</td>`+
+    `<td class="region">${a.region}</td>`+
+    `<td class="num">${heNum(a.reg)}</td>`+
+    `<td class="num">${heNum(a.people)}</td>`+
+    `<td class="barcell"><div class="bar" style="width:${Math.round(a.people/maxPeople*100)}%"></div></td></tr>`
+  ).join("");
+}
+
+function drawPie(labels,data,colors){
+  const ctx=document.getElementById("pie");
+  if(pieChart) pieChart.destroy();
+  pieChart=new Chart(ctx,{
+    type:"doughnut",
+    data:{labels,datasets:[{data,backgroundColor:colors,borderColor:"#fff",borderWidth:2}]},
+    options:{
+      responsive:true,maintainAspectRatio:false,cutout:"52%",
+      plugins:{
+        legend:{position:"left",rtl:true,labels:{font:{family:"Assistant",size:12},
+          boxWidth:12,boxHeight:12,padding:9,color:"#123"}},
+        tooltip:{rtl:true,bodyFont:{family:"Assistant"},titleFont:{family:"Assistant"},
+          callbacks:{label:(c)=>{
+            const tot=c.dataset.data.reduce((s,v)=>s+v,0);
+            const p=Math.round(c.parsed/tot*100);
+            return " "+c.label+": "+c.parsed+" הרשמות ("+p+"%)";}}}
+      }
+    }
+  });
+}
+
+/* ============ FILTER UI ============ */
+function quick(range,el){
+  document.querySelectorAll('.filter .quick button').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  const from=document.getElementById("from"), to=document.getElementById("to");
+  const dates=RECORDS.map(x=>x.date).filter(Boolean).sort((a,b)=>a-b);
+  if(!dates.length) return;
+  const last=dates[dates.length-1], first=dates[0];
+  to.value=fmtDateInput(last);
+  if(range==="all"){ from.value=fmtDateInput(first); }
+  else{ const d=new Date(last); d.setDate(d.getDate()-(+range-1)); from.value=fmtDateInput(d<first?first:d); }
+  render();
+}
+
+/* ============ MESSAGES ============ */
+function setMsg(cls,txt){document.getElementById("message").innerHTML='<div class="msg '+cls+'">'+txt+'</div>';}
+function clearMsg(){document.getElementById("message").innerHTML="";}
+
+/* ============ INIT ============ */
+loadData();
+setInterval(loadData, AUTO_REFRESH_MS);
+</script>
+</body>
+</html>
