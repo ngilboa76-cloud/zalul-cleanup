@@ -409,12 +409,18 @@ function render(){
                  "#055a95","#2bc0d8","#9fb8c9"];
   drawPie(labels,data,palette);
 
-  // ---- North -> South full table ----
-  agg.sort((a,b)=> (b.lat)-(a.lat));
-  const maxPeople=Math.max(1,...agg.map(a=>a.people));
-  document.getElementById("nsCount").textContent=agg.length+" מוקדים";
-  document.getElementById("nsBody").innerHTML=agg.map((a,i)=>
-    `<tr><td class="num">${i+1}</td>`+
+  // ---- North -> South full table: every defined מוקד, including 0-registration ones ----
+  const aggMap=new Map(agg.map(a=>[a.site,a]));
+  const nsList=SITES.map(s=> aggMap.get(s.name) ||
+    {site:s.name, lat:s.lat, region:s.region, reg:0, people:0});
+  // append any data site that isn't in the defined list (unmapped)
+  for(const a of agg){ if(!SITES.some(s=>s.name===a.site)) nsList.push(a); }
+  nsList.sort((a,b)=> (b.lat)-(a.lat));
+  const maxPeople=Math.max(1,...nsList.map(a=>a.people));
+  const active=nsList.filter(a=>a.reg>0).length;
+  document.getElementById("nsCount").textContent=nsList.length+" מוקדים · "+active+" פעילים";
+  document.getElementById("nsBody").innerHTML=nsList.map((a,i)=>
+    `<tr${a.reg===0?' style="opacity:.55"':''}><td class="num">${i+1}</td>`+
     `<td class="beach">${a.site}${a.lat<0?' <span class="pill">חדש</span>':''}</td>`+
     `<td class="region">${a.region}</td>`+
     `<td class="num">${heNum(a.reg)}</td>`+
