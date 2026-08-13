@@ -304,23 +304,37 @@ async function loadData(){
 }
 
 function process(rows){
-  // header index (row 0). Columns by position per the form.
-  // 0 date, 1 event, 2 location, 3 when, 4 preferred beach, 5 name, 6 email,
-  // 7 phone, 8 org, 9 participants, 10 type, 11 region, 12 past, 13 consent
+  // Two supported layouts, auto-detected from the header row:
+  //  FULL (14 cols, raw form): 0 date,1 event,2 loc,3 when,4 beach,5 name,6 email,
+  //       7 phone,8 org,9 participants,10 type,11 region,12 past,13 consent
+  //  SANITIZED (5 cols, PII-free published feed): 0 date,1 event,2 beach,3 participants,4 type
+  const header=(rows[0]||[]).map(x=>(x||"").trim());
+  const sanitized = header.length<=6 &&
+    !header.some(h=>h.indexOf("מייל")>-1||h.indexOf("טלפון")>-1||h.indexOf("שם")>-1);
   const out=[]; const seen=new Set(); const unmapped=new Set();
   for(let r=1;r<rows.length;r++){
-    const c=rows[r]; if(!c || c.length<7) continue;
-    const name=c[5], email=c[6], phone=c[7];
-    if(isTestRow(name,email)) continue;
-    const rawSite=(c[4]&&c[4].trim())?c[4]:c[1];
+    const c=rows[r]; if(!c) continue;
+    let rawSite,date,ppl,type,dedupTok;
+    if(sanitized){
+      if(c.length<3) continue;
+      rawSite=(c[2]&&c[2].trim())?c[2]:c[1];
+      date=parseRegDate(c[0]);
+      ppl=parseInt(digits(c[3]),10)||1;
+      type=(c[4]||"").trim();
+      dedupTok=[c[0],ppl,type].join("~");   // tests pre-filtered by the sheet; drop identical rows
+    }else{
+      if(c.length<7) continue;
+      if(isTestRow(c[5],c[6])) continue;
+      rawSite=(c[4]&&c[4].trim())?c[4]:c[1];
+      date=parseRegDate(c[0]);
+      ppl=parseInt(digits(c[9]),10)||1;
+      type=(c[10]||"").trim();
+      dedupTok=(digits(c[7])||(c[6]||"").toLowerCase().trim());  // same registrant
+    }
     const site=canonicalSite(rawSite);
     if(!site) continue;
-    if(site._unmapped) unmapped.add(rawSite.trim());
-    const date=parseRegDate(c[0]);
-    let ppl=parseInt(digits(c[9]),10); if(!ppl||ppl<1) ppl=1;
-    const type=(c[10]||"").trim();
-    // dedupe key: same registrant (phone or email) + same site
-    const id=(digits(phone)||(email||"").toLowerCase().trim())+"|"+site.name;
+    if(site._unmapped) unmapped.add((rawSite||"").trim());
+    const id=dedupTok+"|"+site.name;
     if(seen.has(id)) continue;
     seen.add(id);
     out.push({site:site.name, lat:site.lat, region:site.region,
