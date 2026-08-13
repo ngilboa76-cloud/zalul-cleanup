@@ -171,7 +171,7 @@
 const SHEET_ID = "127UwKa55BD_Of_TbO7KFtik_r_f9Pd7CwCdiWCFRJIg";
 // Data source. Once the sheet is Published to web (File > Share > Publish to web > CSV),
 // paste that pub URL here. A ?csv=<url> query param overrides it (handy for testing).
-const PUBLISHED_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTu4ympiQf9fkrKyzKL8j1ZXtTU35FsOXTLZjIuK5fGzjS4po4j-qsnRTmLvBnamiGGhFm9sIYBwPtI/pub?gid=774720669&single=true&output=csv";
+const PUBLISHED_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTu4ympiQf9fkrKyzKL8j1ZXtTU35FsOXTLZjIuK5fGzjS4po4j-qsnRTmLvBnamiGGhFm9sIYBwPtI/pub?gid=1923634562&single=true&output=csv";
 const CSV_URL = new URLSearchParams(location.search).get("csv") || PUBLISHED_CSV;
 const AUTO_REFRESH_MS = 5*60*1000;
 
@@ -311,8 +311,10 @@ function process(rows){
   const header=(rows[0]||[]).map(x=>(x||"").trim());
   const sanitized = header.length<=6 &&
     !header.some(h=>h.indexOf("מייל")>-1||h.indexOf("טלפון")>-1||h.indexOf("שם")>-1);
+  // FILTER-based feed has no header row; start at 0 if the first cell is already a date
+  const startRow = parseRegDate(header[0]) ? 0 : 1;
   const out=[]; const seen=new Set(); const unmapped=new Set();
-  for(let r=1;r<rows.length;r++){
+  for(let r=startRow;r<rows.length;r++){
     const c=rows[r]; if(!c) continue;
     let rawSite,date,ppl,type,dedupTok;
     if(sanitized){
