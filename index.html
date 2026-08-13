@@ -171,7 +171,7 @@
 const SHEET_ID = "127UwKa55BD_Of_TbO7KFtik_r_f9Pd7CwCdiWCFRJIg";
 // Data source. Once the sheet is Published to web (File > Share > Publish to web > CSV),
 // paste that pub URL here. A ?csv=<url> query param overrides it (handy for testing).
-const PUBLISHED_CSV = "https://docs.google.com/spreadsheets/d/"+SHEET_ID+"/gviz/tq?tqx=out:csv";
+const PUBLISHED_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTu4ympiQf9fkrKyzKL8j1ZXtTU35FsOXTLZjIuK5fGzjS4po4j-qsnRTmLvBnamiGGhFm9sIYBwPtI/pub?gid=774720669&single=true&output=csv";
 const CSV_URL = new URLSearchParams(location.search).get("csv") || PUBLISHED_CSV;
 const AUTO_REFRESH_MS = 5*60*1000;
 
@@ -210,6 +210,7 @@ const SITES = [
   {name:"חוף החשמל – אשדוד",                  lat:31.83, region:"אשדוד",         match:["החשמל"]},
   {name:"חוף באר טוביה",                      lat:31.75, region:"דרום השפלה",    match:["באר טוביה"]},
   {name:"חוף חופית – אשקלון",                 lat:31.66, region:"אשקלון",        match:["חופית","אשקלון"]},
+  {name:"ים המלח – שפך נחל הקדרון",           lat:31.60, region:"ים המלח",       match:["קדרון","ים המלח"]},
   {name:"נחל חווה – מצפה רמון",               lat:30.61, region:"נגב",           match:["חווה","מצפה רמון"]},
   {name:"צלילת ניקיון – אילת",                lat:29.55, region:"אילת",          match:["אילת","צלילת"]},
 ];
