@@ -123,8 +123,8 @@
   </div>
 
   <div class="filter">
-    <div class="fld"><label for="from">מתאריך הרשמה</label><input type="date" id="from" onchange="render()"></div>
-    <div class="fld"><label for="to">עד תאריך הרשמה</label><input type="date" id="to" onchange="render()"></div>
+    <div class="fld"><label for="from">מתאריך הרשמה</label><input type="date" id="from" onchange="onDateEdit()"></div>
+    <div class="fld"><label for="to">עד תאריך הרשמה</label><input type="date" id="to" onchange="onDateEdit()"></div>
     <div class="quick">
       <button class="btn ghost active" data-range="all" onclick="quick('all',this)">הכל</button>
       <button class="btn ghost" data-range="7" onclick="quick('7',this)">7 ימים אחרונים</button>
@@ -261,6 +261,9 @@ function heNum(n){ return n.toLocaleString("he-IL"); }
 /* ============ STATE ============ */
 let RECORDS=[];      // cleaned, deduped records: {site, date, people, type}
 let pieChart=null;
+let DMIN=null, DMAX=null;     // data date bounds
+let quickMode="all";          // "all" | "7" | "14"
+let userCustom=false;         // true once the user hand-edits a date input
 
 /* ============ LOAD ============ */
 async function loadData(){
@@ -328,11 +331,11 @@ function process(rows){
   // set date filter bounds
   const dates=out.map(x=>x.date).filter(Boolean).sort((a,b)=>a-b);
   if(dates.length){
+    DMIN=dates[0]; DMAX=dates[dates.length-1];
     const from=document.getElementById("from"), to=document.getElementById("to");
-    if(!from.value) from.value=fmtDateInput(dates[0]);
-    if(!to.value)   to.value=fmtDateInput(dates[dates.length-1]);
-    from.min=to.min=fmtDateInput(dates[0]);
-    from.max=to.max=fmtDateInput(dates[dates.length-1]);
+    from.min=to.min=fmtDateInput(DMIN);
+    from.max=to.max=fmtDateInput(DMAX);
+    applyRange();               // always track the true data range (unless user picked custom)
   }
 }
 
@@ -429,13 +432,21 @@ function drawPie(labels,data,colors){
 function quick(range,el){
   document.querySelectorAll('.filter .quick button').forEach(b=>b.classList.remove('active'));
   el.classList.add('active');
+  quickMode=range; userCustom=false;
+  applyRange(); render();
+}
+// set the date inputs from the current quickMode against the live data bounds
+function applyRange(){
+  if(userCustom||!DMIN) return;
   const from=document.getElementById("from"), to=document.getElementById("to");
-  const dates=RECORDS.map(x=>x.date).filter(Boolean).sort((a,b)=>a-b);
-  if(!dates.length) return;
-  const last=dates[dates.length-1], first=dates[0];
-  to.value=fmtDateInput(last);
-  if(range==="all"){ from.value=fmtDateInput(first); }
-  else{ const d=new Date(last); d.setDate(d.getDate()-(+range-1)); from.value=fmtDateInput(d<first?first:d); }
+  to.value=fmtDateInput(DMAX);
+  if(quickMode==="all"){ from.value=fmtDateInput(DMIN); }
+  else{ const d=new Date(DMAX); d.setDate(d.getDate()-(+quickMode-1)); from.value=fmtDateInput(d<DMIN?DMIN:d); }
+}
+// user hand-edited a date -> stop auto-tracking until they hit a quick button
+function onDateEdit(){
+  userCustom=true;
+  document.querySelectorAll('.filter .quick button').forEach(b=>b.classList.remove('active'));
   render();
 }
 
