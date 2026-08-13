@@ -268,21 +268,30 @@ async function loadData(){
   btn.disabled=true; icon.outerHTML='<span class="spin" id="syncIcon"></span>';
   setMsg("load","טוען נתונים מהגיליון…");
   try{
-    const res=await fetch(CSV_URL+(CSV_URL.indexOf("?")===-1?"?":"&")+"_cb="+Date.now());
-    if(!res.ok) throw new Error("HTTP "+res.status);
-    const text=await res.text();
+    let text="", live=false;
+    // 1) try the live sheet
+    try{
+      const res=await fetch(CSV_URL+(CSV_URL.indexOf("?")===-1?"?":"&")+"_cb="+Date.now());
+      if(res.ok){ text=await res.text(); if(parseCSV(text).length>=2) live=true; }
+    }catch(e){ /* fall through to snapshot */ }
+    // 2) fall back to the committed PII-free snapshot
+    if(!live){
+      const r2=await fetch("data.csv?_cb="+Date.now());
+      if(r2.ok) text=await r2.text();
+    }
     const rows=parseCSV(text);
-    if(rows.length<2) throw new Error("no rows");
+    if(rows.length<2) throw new Error("אין נתונים זמינים");
     process(rows);
     const now=new Date();
     document.getElementById("updated").innerHTML =
       "עודכן לאחרונה: <b>"+now.toLocaleDateString("he-IL")+" בשעה "+
-      now.toLocaleTimeString("he-IL",{hour:"2-digit",minute:"2-digit"})+"</b>";
+      now.toLocaleTimeString("he-IL",{hour:"2-digit",minute:"2-digit"})+"</b>"+
+      (live?" · מקור: גיליון חי"
+           :" · מקור: תמונת מצב מעודכנת (הגיליון עדיין לא פתוח למשיכה אנונימית)");
     clearMsg();
     render();
   }catch(err){
-    setMsg("err","שגיאה בשליפת הנתונים: "+err.message+
-      ". ודאו שהגיליון משותף כ״כל מי שיש לו את הקישור – מציג״.");
+    setMsg("err","שגיאה בשליפת הנתונים: "+err.message+".");
   }finally{
     const b=document.getElementById("syncBtn");
     b.disabled=false;
