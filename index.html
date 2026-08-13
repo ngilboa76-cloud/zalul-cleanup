@@ -118,7 +118,7 @@
   <div class="cards" id="cards">
     <div class="card"><div class="k">סה״כ הרשמות (טפסים)</div><div class="v" id="cReg">–</div></div>
     <div class="card"><div class="k">סה״כ משתתפים</div><div class="v" id="cPeople">–</div></div>
-    <div class="card"><div class="k">חופים / אתרים פעילים</div><div class="v" id="cSites">–</div></div>
+    <div class="card"><div class="k">חופים / מוקדים פעילים</div><div class="v" id="cSites">–</div></div>
     <div class="card"><div class="k">קבוצות וארגונים</div><div class="v" id="cGroups">–</div></div>
   </div>
 
@@ -140,27 +140,27 @@
       <div class="chartbox"><canvas id="pie"></canvas></div>
     </section>
     <section class="panel">
-      <h2>5 האתרים המובילים</h2>
+      <h2>5 המוקדים המובילים</h2>
       <div class="hint">מדורגים לפי סך המשתתפים (כולל קבוצות וארגונים).</div>
       <table>
-        <thead><tr><th class="num">#</th><th>אתר</th><th class="num">הרשמות</th><th class="num">משתתפים</th></tr></thead>
+        <thead><tr><th class="num">#</th><th>מוקד</th><th class="num">הרשמות</th><th class="num">משתתפים</th></tr></thead>
         <tbody id="topBody"></tbody>
       </table>
     </section>
   </div>
 
-  <h2 class="sec">כל האתרים · מצפון לדרום <span class="pill" id="nsCount"></span></h2>
+  <h2 class="sec">כל המוקדים · מצפון לדרום <span class="pill" id="nsCount"></span></h2>
   <section class="panel full-table-wrap">
-    <div class="hint">סדר גיאוגרפי לפי קו רוחב בישראל, מהאתר הצפוני ביותר (נחל הבניאס) ועד אילת בדרום.</div>
+    <div class="hint">סדר גיאוגרפי לפי קו רוחב בישראל, מהמוקד הצפוני ביותר (נחל הבניאס) ועד אילת בדרום.</div>
     <table>
-      <thead><tr><th class="num">#</th><th>אתר הניקיון</th><th>אזור</th><th class="num">הרשמות</th><th class="num">משתתפים</th><th>נפח</th></tr></thead>
+      <thead><tr><th class="num">#</th><th>מוקד הניקיון</th><th>אזור</th><th class="num">הרשמות</th><th class="num">משתתפים</th><th>נפח</th></tr></thead>
       <tbody id="nsBody"></tbody>
     </table>
   </section>
 
   <div class="foot">
     הנתונים נשאבים בזמן אמת מטופס ההרשמה (Google Sheets) ומתעדכנים בכל טעינה, בלחיצה על "סנכרון" ואוטומטית כל 5 דקות.<br>
-    ניקוי אוטומטי: שורות בדיקה מוסרות · הרשמות כפולות (אותו נרשם לאותו אתר) מאוחדות לרשומה אחת.<br>
+    ניקוי אוטומטי: שורות בדיקה מוסרות · הרשמות כפולות (אותו נרשם לאותו מוקד) מאוחדות לרשומה אחת.<br>
     צלול · עמותה להגנת הים, החופים והנחלים
   </div>
 
@@ -412,7 +412,7 @@ function render(){
   // ---- North -> South full table ----
   agg.sort((a,b)=> (b.lat)-(a.lat));
   const maxPeople=Math.max(1,...agg.map(a=>a.people));
-  document.getElementById("nsCount").textContent=agg.length+" אתרים";
+  document.getElementById("nsCount").textContent=agg.length+" מוקדים";
   document.getElementById("nsBody").innerHTML=agg.map((a,i)=>
     `<tr><td class="num">${i+1}</td>`+
     `<td class="beach">${a.site}${a.lat<0?' <span class="pill">חדש</span>':''}</td>`+
