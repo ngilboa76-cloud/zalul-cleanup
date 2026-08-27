@@ -279,13 +279,20 @@ async function loadData(){
       const res=await fetch(CSV_URL+(CSV_URL.indexOf("?")===-1?"?":"&")+"_cb="+Date.now());
       if(res.ok){ text=await res.text(); if(parseCSV(text).length>=2) live=true; }
     }catch(e){ /* fall through to snapshot */ }
-    // 2) fall back to the committed PII-free snapshot
+    // 2) fall back to the committed PII-free snapshot (guarded; absolute URL so it
+    //    resolves even from odd bases / when opened as a local file)
     if(!live){
-      const r2=await fetch("data.csv?_cb="+Date.now());
-      if(r2.ok) text=await r2.text();
+      try{
+        const r2=await fetch(new URL("data.csv?_cb="+Date.now(), document.baseURI));
+        if(r2.ok) text=await r2.text();
+      }catch(e){ /* local file:// or offline */ }
     }
     const rows=parseCSV(text);
-    if(rows.length<2) throw new Error("אין נתונים זמינים");
+    if(rows.length<2){
+      if(location.protocol==="file:")
+        throw new Error("נראה שהקובץ נפתח מקומית מהמחשב. פתחו את הכתובת החיה: ngilboa76-cloud.github.io/zalul-cleanup");
+      throw new Error("אין נתונים זמינים כרגע, נסו שוב בעוד רגע");
+    }
     process(rows);
     const now=new Date();
     document.getElementById("updated").innerHTML =
