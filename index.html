@@ -80,6 +80,15 @@
   .beach{font-weight:700}
   .region{font-size:12px;color:var(--muted);font-weight:600}
   .bar{height:7px;border-radius:4px;background:linear-gradient(90deg,var(--blue-l),var(--blue));min-width:3px}
+  .splitbar{display:flex;height:34px;border-radius:10px;overflow:hidden;margin:8px 0 14px;box-shadow:inset 0 0 0 1px var(--line)}
+  .splitbar .seg{display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:13.5px;transition:width .4s;min-width:0;white-space:nowrap;overflow:hidden}
+  .splitbar .seg.sea{background:linear-gradient(90deg,var(--blue-l),var(--blue))}
+  .splitbar .seg.river{background:linear-gradient(90deg,#2bb0a0,#0a8f6f)}
+  .splitlegend{display:flex;gap:24px;flex-wrap:wrap;font-size:13.5px;color:var(--muted);font-weight:600}
+  .splitlegend b{color:var(--ink)}
+  .sdot{display:inline-block;width:11px;height:11px;border-radius:3px;vertical-align:middle;margin-inline-end:4px}
+  .sdot.sea{background:var(--blue)}
+  .sdot.river{background:#0a8f6f}
   .barcell{width:120px}
   .full-table-wrap{max-height:none;overflow:visible}
   .foot{margin-top:26px;font-size:12.5px;color:var(--muted);text-align:center;line-height:1.7}
@@ -149,6 +158,19 @@
     </section>
   </div>
 
+  <section class="panel splitpanel">
+    <h2>חוף מול נחל</h2>
+    <div class="hint">חלוקה לפי כותרת המוקד: מוקד שכותרתו כוללת "נחל" / "שפך" / "ואדי" נספר כנחל, השאר כחוף.</div>
+    <div class="splitbar">
+      <div class="seg sea" id="segSea"><span id="segSeaTxt"></span></div>
+      <div class="seg river" id="segRiver"><span id="segRiverTxt"></span></div>
+    </div>
+    <div class="splitlegend">
+      <span><i class="sdot sea"></i> חופים: <b id="seaReg">–</b> הרשמות · <b id="seaPpl">–</b> משתתפים · <b id="seaSites">–</b> מוקדים</span>
+      <span><i class="sdot river"></i> נחלים: <b id="riverReg">–</b> הרשמות · <b id="riverPpl">–</b> משתתפים · <b id="riverSites">–</b> מוקדים</span>
+    </div>
+  </section>
+
   <h2 class="sec">כל המוקדים · מצפון לדרום <span class="pill" id="nsCount"></span></h2>
   <section class="panel full-table-wrap">
     <div class="hint">סדר גיאוגרפי לפי קו רוחב בישראל, מהמוקד הצפוני ביותר (נחל הבניאס) ועד אילת בדרום.</div>
@@ -190,6 +212,7 @@ const SITES = [
   {name:"פארק הכט – חיפה",                    lat:32.812,region:"חיפה",          match:["הכט"]},
   {name:"נחל סעדיה – חיפה",                   lat:32.805,region:"חיפה",          match:["סעדיה"]},
   {name:"חוף חלוצי התעשייה – חיפה",           lat:32.792,region:"חיפה",          match:["חלוצי"]},
+  {name:"חוף החותרים – קיבוץ החותרים",         lat:32.76, region:"חוף הכרמל",     match:["חותרים"]},
   {name:"ואדי לוטם – חיפה",                   lat:32.72, region:"חוף הכרמל",     match:["לוטם"]},
   {name:"חוף המבצר – עתלית",                  lat:32.70, region:"חוף הכרמל",     match:["המבצר","עתלית"]},
   {name:"נווה ים – חוף הכרמל",                lat:32.68, region:"חוף הכרמל",     match:["נווה ים"]},
@@ -261,6 +284,8 @@ function fmtDateInput(d){
   return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 }
 function heNum(n){ return n.toLocaleString("he-IL"); }
+// classify a מוקד as river/stream vs beach by its title
+function siteKind(name){ return /נחל|שפך|ואדי/.test(name||"") ? "river" : "sea"; }
 
 /* ============ STATE ============ */
 let RECORDS=[];      // cleaned, deduped records: {site, date, people, type}
@@ -401,6 +426,22 @@ function render(){
   document.getElementById("cPeople").textContent=heNum(totPeople);
   document.getElementById("cSites").textContent=heNum(agg.length);
   document.getElementById("cGroups").textContent=heNum(groups);
+
+  // ---- חוף מול נחל split (by מוקד title) ----
+  const kind={sea:{reg:0,ppl:0,sites:new Set()}, river:{reg:0,ppl:0,sites:new Set()}};
+  for(const x of recs){ const k=kind[siteKind(x.site)]; k.reg++; k.ppl+=x.people; k.sites.add(x.site); }
+  const seaP=kind.sea.ppl, rivP=kind.river.ppl, totP=Math.max(1,seaP+rivP);
+  const seaPct=Math.round(seaP/totP*100), rivPct=100-seaPct;
+  document.getElementById("segSea").style.width=seaPct+"%";
+  document.getElementById("segRiver").style.width=rivPct+"%";
+  document.getElementById("segSeaTxt").textContent=seaPct>=8?"חוף "+seaPct+"%":"";
+  document.getElementById("segRiverTxt").textContent=rivPct>=8?"נחל "+rivPct+"%":"";
+  document.getElementById("seaReg").textContent=heNum(kind.sea.reg);
+  document.getElementById("seaPpl").textContent=heNum(seaP);
+  document.getElementById("seaSites").textContent=heNum(kind.sea.sites.size);
+  document.getElementById("riverReg").textContent=heNum(kind.river.reg);
+  document.getElementById("riverPpl").textContent=heNum(rivP);
+  document.getElementById("riverSites").textContent=heNum(kind.river.sites.size);
 
   // ---- Top 5 by participants ----
   const top=[...agg].sort((a,b)=>b.people-a.people||b.reg-a.reg).slice(0,5);
