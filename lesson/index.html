@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>החוף שלנו · מה אנחנו משאירים אחרינו? | צלול</title>
+<link rel="icon" href="assets/favicon.png">
+<meta name="description" content="סביבה לימודית אינטראקטיבית לקראת יום ניקיון החופים הגדול של עמותת צלול">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blue:#0871B9; --slate:#3D627C; --link:#1E73BE; --teal:#0093B7;
+  --light:#7AC9DE; --wash:#DBFCFF; --orange:#FFB066; --terra:#E88B6A; --green:#3B6F56;
+  --sand:#EEDCBB; --sand-d:#DBC79C; --ink:#22384A; --muted:#6C8496;
+  --card:#ffffff; --line:#DCE7EF; --shadow:0 10px 30px rgba(8,113,185,.10);
+  --r:18px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:'Assistant',"Segoe UI",Arial,sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(1100px 500px at 100% -10%, #EAF7FC 0%, transparent 60%),
+    radial-gradient(900px 420px at 0% 100%, #F4FBFD 0%, transparent 60%),
+    #FBFDFE;
+  min-height:100vh; -webkit-text-size-adjust:100%;
+}
+button{font-family:inherit}
+.wrap{max-width:1060px;margin:0 auto;padding:0 18px 140px}
+
+/* ---------- header ---------- */
+header.top{
+  position:sticky;top:0;z-index:40;
+  background:rgba(251,253,254,.86);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.top-in{max-width:1060px;margin:0 auto;padding:10px 18px;display:flex;align-items:center;gap:14px}
+.top-in img.logo{height:40px;width:auto;display:block}
+.top-title{font-weight:800;font-size:15px;line-height:1.2;color:var(--slate)}
+.top-title small{display:block;font-weight:600;font-size:12px;color:var(--muted)}
+.spacer{flex:1}
+.tbtn{
+  border:1px solid var(--line);background:#fff;color:var(--slate);
+  border-radius:999px;padding:8px 14px;font-weight:700;font-size:13px;cursor:pointer;
+  display:inline-flex;align-items:center;gap:7px;transition:.15s;
+}
+.tbtn:hover{border-color:var(--light);color:var(--blue)}
+.tbtn.on{background:var(--orange);border-color:var(--orange);color:#4A2E10}
+.progress{height:4px;background:#E6EEF4}
+.progress > i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--blue));transition:width .45s cubic-bezier(.4,0,.2,1)}
+
+/* ---------- station shell ---------- */
+.station{display:none;animation:in .45s cubic-bezier(.2,.7,.3,1)}
+.station.active{display:block}
+@keyframes in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.kicker{display:inline-flex;align-items:center;gap:8px;margin:30px 0 8px;
+  background:var(--wash);color:var(--blue);border-radius:999px;padding:6px 14px;font-weight:700;font-size:13px}
+h1{font-size:clamp(26px,4.4vw,40px);line-height:1.15;margin:0 0 10px;font-weight:800;color:var(--slate);letter-spacing:-.4px}
+h2{font-size:clamp(20px,3vw,26px);margin:26px 0 10px;font-weight:800;color:var(--slate)}
+p.lead{font-size:clamp(16px,2.2vw,19px);line-height:1.65;color:var(--slate);margin:0 0 14px;max-width:62ch}
+p{font-size:16.5px;line-height:1.7;color:var(--ink);max-width:66ch}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:22px}
+.hint{font-size:13.5px;color:var(--muted)}
+.big{font-weight:800;color:var(--blue)}
+.reveal{display:none}
+.reveal.show{display:block;animation:in .5s cubic-bezier(.2,.7,.3,1)}
+.btn{
+  border:0;border-radius:999px;background:var(--blue);color:#fff;font-weight:800;font-size:15px;
+  padding:12px 24px;cursor:pointer;box-shadow:0 8px 18px rgba(8,113,185,.25);transition:.15s;
+}
+.btn:hover{transform:translateY(-1px);box-shadow:0 12px 22px rgba(8,113,185,.32)}
+.btn.ghost{background:#fff;color:var(--blue);border:1.5px solid var(--light);box-shadow:none}
+.btn:disabled{opacity:.45;cursor:default;transform:none;box-shadow:none}
+
+/* ---------- 1. beach ---------- */
+.beach{
+  position:relative;height:340px;border-radius:var(--r);overflow:hidden;border:1px solid var(--line);
+  background:
+    linear-gradient(#BFE6F5 0%, #9FD8EE 22%),
+    none;
+  cursor:crosshair;user-select:none;
+}
+.beach .sea{position:absolute;inset:0 0 62% 0;background:linear-gradient(#5FBEE2 0%,#2E93C0 55%,#1E7FAC 100%)}
+.beach .sea:after{content:"";position:absolute;left:0;right:0;top:30%;height:60%;
+  background:repeating-linear-gradient(transparent 0 14px,rgba(255,255,255,.16) 14px 17px);opacity:.8}
+.beach .foam{position:absolute;left:0;right:0;top:36%;height:16px;background:
+  radial-gradient(6px 8px at 10% 50%,#fff 60%,transparent 62%),
+  radial-gradient(9px 8px at 26% 40%,#fff 60%,transparent 62%),
+  radial-gradient(7px 9px at 44% 60%,#fff 60%,transparent 62%),
+  radial-gradient(10px 8px at 62% 45%,#fff 60%,transparent 62%),
+  radial-gradient(7px 8px at 80% 55%,#fff 60%,transparent 62%),
+  radial-gradient(8px 8px at 94% 45%,#fff 60%,transparent 62%);
+  opacity:.9;animation:foam 5s ease-in-out infinite alternate}
+@keyframes foam{to{transform:translateY(5px)}}
+.beach .shore{position:absolute;inset:38% 0 0 0;
+  background:linear-gradient(#C9B285 0%,#D9C49C 7%,var(--sand) 26%,#F4E7CC 100%)}
+.beach .shore:after{content:"";position:absolute;inset:0;opacity:.5;
+  background-image:radial-gradient(1.5px 1.5px at 12% 22%,#B9A176 50%,transparent 51%),
+   radial-gradient(1.5px 1.5px at 62% 44%,#B9A176 50%,transparent 51%),
+   radial-gradient(1.5px 1.5px at 34% 72%,#C0A87E 50%,transparent 51%),
+   radial-gradient(2px 2px at 84% 61%,#B9A176 50%,transparent 51%),
+   radial-gradient(1.5px 1.5px at 48% 88%,#C0A87E 50%,transparent 51%);
+  background-size:70px 70px,90px 90px,60px 60px,110px 110px,80px 80px}
+.beach .castle{position:absolute;bottom:14px;left:6%;font-size:44px;filter:drop-shadow(0 4px 6px rgba(0,0,0,.12))}
+.trash{
+  position:absolute;font-size:30px;line-height:1;cursor:pointer;
+  filter:drop-shadow(0 3px 5px rgba(0,0,0,.22));transition:transform .18s;
+}
+.trash:hover{transform:scale(1.22) rotate(-6deg)}
+.trash.got{pointer-events:none;animation:pop .45s forwards}
+@keyframes pop{60%{transform:scale(1.5) translateY(-16px);opacity:1}to{transform:scale(.2) translateY(-60px);opacity:0}}
+.bagline{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;min-height:44px}
+.chip{background:var(--wash);border:1px solid #BFE4F2;color:var(--slate);border-radius:999px;
+  padding:7px 13px;font-weight:700;font-size:14px;display:inline-flex;gap:7px;align-items:center;animation:in .3s}
+.counter{font-weight:800;color:var(--blue);font-size:15px}
+
+/* ---------- 2. paths ---------- */
+.pathgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+.pathbtn{
+  border:1.5px solid var(--line);background:#fff;border-radius:14px;padding:14px 12px;cursor:pointer;
+  text-align:center;font-weight:700;color:var(--slate);transition:.15s;font-size:15px;
+}
+.pathbtn .em{display:block;font-size:26px;margin-bottom:6px}
+.pathbtn:hover{border-color:var(--light);transform:translateY(-2px)}
+.pathbtn.done{background:var(--wash);border-color:var(--light)}
+.pathbtn.active{border-color:var(--blue);box-shadow:0 0 0 3px rgba(8,113,185,.14)}
+#pathSvg{width:100%;height:auto;display:block;border-radius:var(--r);border:1px solid var(--line);background:#EAF6FB}
+.pathmsg{margin-top:12px;background:var(--wash);border-right:5px solid var(--teal);border-radius:12px;padding:14px 16px;
+  font-size:16.5px;font-weight:600;color:var(--slate);min-height:24px}
+
+/* ---------- 3. lifespan ---------- */
+.lifecard{display:grid;grid-template-columns:110px 1fr;gap:18px;align-items:center}
+.lifecard .em{font-size:64px;text-align:center}
+.slider{width:100%;accent-color:var(--blue);height:30px}
+.bars{margin-top:16px}
+.barrow{display:flex;align-items:center;gap:10px;margin-bottom:10px;font-weight:700;font-size:14px;color:var(--slate)}
+.barrow .lbl{width:112px;flex:none}
+.bartrack{flex:1;height:18px;background:#EEF4F8;border-radius:99px;overflow:hidden}
+.bartrack > i{display:block;height:100%;width:0;border-radius:99px;transition:width 1s cubic-bezier(.3,.8,.3,1)}
+.bartrack.use > i{background:var(--green)}
+.bartrack.env > i{background:linear-gradient(90deg,var(--terra),#C9503A)}
+.dots{display:flex;gap:6px;justify-content:center;margin-top:16px}
+.dots i{width:9px;height:9px;border-radius:99px;background:#D6E3EC;display:block;cursor:pointer}
+.dots i.on{background:var(--blue);width:22px}
+
+/* ---------- 4. microplastic ---------- */
+.sandwrap{position:relative;height:280px;border-radius:var(--r);overflow:hidden;border:1px solid var(--line);
+  cursor:none;touch-action:none;background:#E8D7B5}
+#sandCanvas{display:block;width:100%;height:100%}
+#plasticLayer{position:absolute;inset:0;
+  -webkit-mask-image:radial-gradient(circle 0px at 50% 50%,#000 70%,transparent 100%);
+  mask-image:radial-gradient(circle 0px at 50% 50%,#000 70%,transparent 100%);}
+.speck{position:absolute;border-radius:2px;cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,.35)}
+.speck.got{outline:2px solid #fff;outline-offset:2px;box-shadow:0 0 0 3px rgba(8,113,185,.6)}
+#lens{position:absolute;left:0;top:0;width:160px;height:160px;border-radius:50%;pointer-events:none;opacity:0;
+  border:5px solid rgba(255,255,255,.95);
+  box-shadow:0 0 0 3px var(--blue), 0 0 0 9999px rgba(24,48,66,.5), inset 0 0 26px rgba(255,255,255,.28);
+  transition:opacity .18s}
+.sandtip{position:absolute;inset:auto 0 0 0;z-index:5;background:rgba(34,56,74,.82);color:#fff;font-size:13.5px;
+  padding:8px 14px;font-weight:600;backdrop-filter:blur(3px)}
+#plasticLayer{z-index:3}
+#lens{z-index:2}
+
+/* ---------- 5. scale ---------- */
+.num{font-weight:800;color:var(--blue);font-variant-numeric:tabular-nums;letter-spacing:-1px}
+.livebox{background:linear-gradient(135deg,#0871B9,#0093B7);color:#fff;border-radius:var(--r);padding:26px;text-align:center;box-shadow:var(--shadow)}
+.livebox .num{color:#fff;font-size:clamp(34px,7vw,58px);display:block;line-height:1.05}
+.livebox small{display:block;font-size:15px;opacity:.9;margin-top:8px;font-weight:600}
+.road{position:relative;height:86px;margin-top:18px;border-radius:14px;overflow:hidden;background:#3D627C}
+.road:after{content:"";position:absolute;left:0;right:0;top:50%;height:3px;
+  background:repeating-linear-gradient(90deg,#fff 0 22px,transparent 22px 44px);opacity:.5}
+.truck{position:absolute;top:14px;font-size:40px;animation:drive 6s linear infinite}
+@keyframes drive{from{right:-12%}to{right:108%}}
+.statgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:16px}
+.stat{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;text-align:center}
+.stat b{display:block;font-size:34px;color:var(--blue);line-height:1.1}
+.stat span{font-size:14.5px;color:var(--slate);font-weight:600}
+
+/* ---------- 6. turtle ---------- */
+.ocean{position:relative;height:330px;border-radius:var(--r);overflow:hidden;
+  background:linear-gradient(#4FB3DC,#1E6F9E 75%,#15567C);border:1px solid var(--line)}
+.ray{position:absolute;top:-30%;width:70px;height:160%;background:linear-gradient(rgba(255,255,255,.25),transparent);
+  transform:rotate(12deg);filter:blur(6px)}
+.float{position:absolute;cursor:pointer;transition:transform .2s;animation:bob 5s ease-in-out infinite alternate}
+.float:hover{transform:scale(1.08)}
+@keyframes bob{to{transform:translateY(-14px)}}
+.float.judged{cursor:default;animation:none}
+.tag{position:absolute;bottom:-6px;right:50%;transform:translateX(50%);font-size:12px;font-weight:800;
+  padding:3px 9px;border-radius:99px;white-space:nowrap}
+.tag.ok{background:#3B6F56;color:#fff}
+.tag.bad{background:#C9503A;color:#fff}
+.turtleline{display:flex;align-items:center;gap:12px;margin-top:14px;font-weight:700;color:var(--slate);font-size:16px}
+
+/* ---------- 7. pyramid ---------- */
+.rlist{list-style:none;margin:0;padding:0}
+.rrow{display:flex;align-items:center;gap:12px;background:#fff;border:1.5px solid var(--line);border-radius:14px;
+  padding:12px 14px;margin-bottom:9px;transition:.2s}
+.rrow.ok{border-color:#9ED0B4;background:#F1FAF5}
+.rrow.no{border-color:#EFB5A8;background:#FEF5F3}
+.rrow .rank{width:30px;height:30px;flex:none;border-radius:99px;background:var(--wash);color:var(--blue);
+  display:grid;place-items:center;font-weight:800;font-size:14px}
+.rrow .rname{font-weight:800;color:var(--slate);font-size:16px}
+.rrow .ren{font-size:12.5px;color:var(--muted);font-weight:700;letter-spacing:.4px}
+.rrow .rdesc{display:none;font-size:14.5px;color:var(--ink);margin-top:4px;line-height:1.55}
+.rrow.open .rdesc{display:block}
+.arrows{margin-inline-start:auto;display:flex;gap:6px;flex:none}
+.arrows button{width:32px;height:32px;border-radius:9px;border:1px solid var(--line);background:#fff;
+  cursor:pointer;font-size:15px;color:var(--slate);line-height:1}
+.arrows button:hover{border-color:var(--light);color:var(--blue)}
+.pyr{margin-top:18px;display:flex;flex-direction:column;align-items:center;gap:4px}
+.pyr div{color:#fff;font-weight:800;font-size:14px;text-align:center;padding:9px 0;border-radius:6px}
+
+/* ---------- 8. pledge ---------- */
+.pickgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:10px}
+.pick{border:1.5px solid var(--line);background:#fff;border-radius:14px;padding:14px;cursor:pointer;
+  display:flex;gap:11px;align-items:flex-start;font-size:15px;font-weight:600;color:var(--slate);transition:.15s;text-align:right}
+.pick:hover{border-color:var(--light)}
+.pick.on{border-color:var(--blue);background:var(--wash);box-shadow:0 0 0 3px rgba(8,113,185,.10)}
+.pick .em{font-size:24px;line-height:1}
+.calc{display:flex;flex-wrap:wrap;align-items:center;gap:10px;font-weight:700;color:var(--slate);font-size:17px}
+.calc input{width:88px;padding:9px 11px;border:1.5px solid var(--line);border-radius:11px;font-size:17px;
+  font-weight:800;text-align:center;color:var(--blue);font-family:inherit}
+.result{background:linear-gradient(135deg,#0093B7,#0871B9);color:#fff;border-radius:14px;padding:18px 22px;
+  text-align:center;margin-top:14px}
+.result b{font-size:44px;display:block;line-height:1.1;font-variant-numeric:tabular-nums}
+
+/* ---------- 9/10 ---------- */
+textarea{width:100%;min-height:110px;padding:14px;border:1.5px solid var(--line);border-radius:14px;
+  font-family:inherit;font-size:16.5px;line-height:1.6;color:var(--ink);resize:vertical}
+textarea:focus{outline:none;border-color:var(--light);box-shadow:0 0 0 3px rgba(122,201,222,.25)}
+.eventcard{background:linear-gradient(135deg,#0871B9 0%,#0093B7 100%);color:#fff;border-radius:22px;padding:30px;
+  box-shadow:0 18px 40px rgba(8,113,185,.28)}
+.eventcard h3{margin:0 0 6px;font-size:clamp(24px,4vw,34px);font-weight:800}
+.eventcard p{color:#EAF7FC;max-width:56ch}
+.eventrow{display:flex;flex-wrap:wrap;gap:20px;margin:18px 0 22px}
+.eventrow div b{display:block;font-size:22px;font-weight:800}
+.eventrow div span{font-size:13.5px;opacity:.85;font-weight:600}
+a.cta{display:inline-block;background:#fff;color:var(--blue);text-decoration:none;font-weight:800;font-size:16px;
+  border-radius:999px;padding:13px 26px;margin:0 0 10px 10px;box-shadow:0 8px 18px rgba(0,0,0,.14)}
+a.cta.line{background:transparent;color:#fff;box-shadow:none;border:1.5px solid rgba(255,255,255,.6)}
+
+/* ---------- teacher ---------- */
+.teach{display:none;margin:18px 0;border:1.5px dashed var(--orange);background:#FFF8EF;border-radius:var(--r);padding:18px 20px}
+body.teacher .teach{display:block;animation:in .3s}
+.teach h4{margin:0 0 4px;color:#9A5A17;font-size:16px;font-weight:800;display:flex;align-items:center;gap:8px}
+.teach .time{background:var(--orange);color:#4A2E10;border-radius:99px;padding:2px 10px;font-size:12.5px;font-weight:800}
+.teach p,.teach li{font-size:15px;color:#5C4326;line-height:1.65;max-width:none}
+.teach ul{margin:8px 0;padding-inline-start:20px}
+.teach .q{background:#fff;border-radius:10px;padding:10px 13px;font-weight:700;color:#7A4A12;margin:8px 0;border-right:4px solid var(--orange)}
+
+/* ---------- demo badge ---------- */
+.demoflag{display:none}
+body.demo .demoflag{display:flex;align-items:center;gap:10px;max-width:1060px;margin:18px auto 0;
+  background:var(--wash);border:1.5px solid var(--light);border-radius:14px;padding:12px 16px;
+  font-size:14.5px;font-weight:700;color:var(--slate)}
+body.demo .demoflag span{font-size:20px;line-height:1}
+
+/* ---------- nav ---------- */
+.nav{position:fixed;inset:auto 0 0 0;z-index:40;background:rgba(251,253,254,.92);backdrop-filter:blur(10px);
+  border-top:1px solid var(--line);padding:11px 18px;display:flex;align-items:center;gap:12px;justify-content:center}
+.nav .steps{display:flex;gap:7px;flex-wrap:wrap;justify-content:center}
+.nav .steps b{width:10px;height:10px;border-radius:99px;background:#D6E3EC;cursor:pointer;display:block;transition:.2s}
+.nav .steps b.on{background:var(--blue);width:26px}
+.nav .steps b.seen{background:var(--light)}
+.nb{border:1px solid var(--line);background:#fff;border-radius:999px;width:42px;height:42px;font-size:19px;
+  cursor:pointer;color:var(--slate);flex:none}
+.nb:hover{border-color:var(--light);color:var(--blue)}
+.nb:disabled{opacity:.35;cursor:default}
+@media(max-width:620px){
+  .lifecard{grid-template-columns:1fr}
+  .lifecard .em{font-size:52px}
+  .top-title small{display:none}
+  .beach{height:290px}
+  .nav .steps b{width:8px;height:8px}
+  .nav .steps b.on{width:20px}
+}
+@media print{
+  header.top,.nav,.beach,.ocean,.sandwrap,#pathSvg{display:none!important}
+  .station{display:block!important;page-break-after:always}
+  body{background:#fff}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <img class="logo" src="assets/zalul-wide.png" alt="צלול">
+    <div class="top-title">החוף שלנו<small>מה אנחנו משאירים אחרינו?</small></div>
+    <div class="spacer"></div>
+    <button class="tbtn" id="teachBtn" title="הצגת מדריך למורה">👩‍🏫 <span>מצב מורה</span></button>
+  </div>
+  <div class="progress"><i id="bar"></i></div>
+</header>
+
+<div class="demoflag"><span>🔎</span>דוגמית. זו טעימה של שלוש תחנות מתוך אחת עשרה, כדי להראות את אופי הסביבה.</div>
+
+<div class="wrap">
+
+<!-- ============ 0 ============ -->
+<section class="station active" data-t="פתיחה">
+  <div class="kicker">🌊 לקראת יום ניקיון החופים הגדול</div>
+  <h1>החוף שלנו.<br>מה אנחנו משאירים אחרינו?</h1>
+  <p class="lead">שעתיים בחוף. שיחקנו, אכלנו, שתינו, בנינו ארמון בחול וחזרנו הביתה.<br>
+  לפני שיוצאים לנקות, בואו נבין מה בעצם קורה לפסולת שנשארת שם.</p>
+  <div class="card" style="margin-top:18px">
+    <p style="margin:0 0 12px"><b>מה מחכה לכם כאן:</b></p>
+    <div class="pickgrid">
+      <div class="pick" onclick="go(1)"><span class="em">🏖️</span> מה נשאר בחול</div>
+      <div class="pick" onclick="go(2)"><span class="em">💨</span> לאן הפסולת נודדת</div>
+      <div class="pick" onclick="go(4)"><span class="em">🔍</span> ציד מיקרופלסטיק</div>
+      <div class="pick" onclick="go(6)"><span class="em">🐢</span> ההחלטה של צב הים</div>
+      <div class="pick" onclick="go(7)"><span class="em">🔺</span> פירמידת 5 ה־R</div>
+      <div class="pick" onclick="go(9)"><span class="em">🧹</span> יוצאים לניקיון</div>
+    </div>
+    <button class="btn" style="margin-top:18px" onclick="go(1)">מתחילים →</button>
+  </div>
+
+  <div class="teach">
+    <h4><span class="time">45 דקות</span> מערך שיעור למורה</h4>
+    <p>הסביבה בנויה כעשר תחנות שמקבילות למבנה השיעור. אפשר להקרין על מסך הכיתה ולנווט יחד, או לתת לתלמידים לעבוד בזוגות על מחשב או טאבלט.</p>
+    <p><b>מטרת המערך:</b> להפוך את יום הניקיון מ"איסוף לכלוך" לחוויה לימודית. התלמידים יבינו מהי פסולת חד־פעמית, מדוע פלסטיק הוא בעיה, לאן מגיעה הפסולת מהחוף, מהו מיקרופלסטיק, מדוע מניעה חשובה יותר ממיחזור, ומה אפשר לעשות אחרת ביום־יום.</p>
+    <p><b>קהל יעד:</b> בית ספר יסודי. <b>המלצה:</b> השאירו את מצב המורה פעיל אצלכם בלבד, הוא מציג את ההנחיות והתשובות.</p>
+  </div>
+</section>
+
+<!-- ============ 1 ============ -->
+<section class="station" data-t="מה נשאר בחול">
+  <div class="kicker">תחנה 1</div>
+  <h1>מה נשאר אחרינו בחוף?</h1>
+  <p class="lead">בחוף שלפניכם מסתתרים <b>8 פריטי פסולת</b> שמישהו השאיר. מצאו אותם.</p>
+
+  <div class="beach" id="beach">
+    <div class="sea"></div><div class="foam"></div><div class="shore"></div>
+    <div class="castle">🏰</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px;margin-top:12px;flex-wrap:wrap">
+    <span class="counter" id="beachCount">0 מתוך 8</span>
+    <button class="btn ghost" id="beachSkip" style="padding:8px 16px;font-size:14px">אספתי הכל, ממשיכים</button>
+  </div>
+  <div class="bagline" id="beachBag"></div>
+
+  <div class="reveal" id="beachDone">
+    <div class="card" style="margin-top:16px">
+      <h2 style="margin-top:0">והשאלה החשובה באמת</h2>
+      <p style="font-size:19px;font-weight:700;color:var(--blue)">מה קורה לפסולת הזאת אם אף אחד לא אוסף אותה? האם היא פשוט נעלמת?</p>
+      <p>לא. בתחנה הבאה נראה בדיוק לאן היא הולכת.</p>
+      <button class="btn" onclick="go(2)">לאן היא הולכת? →</button>
+    </div>
+  </div>
+
+  <div class="teach">
+    <h4><span class="time">5 דקות</span> פתיחה, מה נשאר אחרינו בחוף</h4>
+    <div class="q">"בילינו שעתיים בחוף והלכנו הביתה. מה נשאר אחרינו?"</div>
+    <p>קבלו את תשובות התלמידים ללא שיפוט, אפשר לכתוב על הלוח במקביל למה שנאסף על המסך: בקבוק, שקית, עטיפה, כוס, בדל סיגריה, צעצוע, קשית, כלי אוכל, שקית חטיפים.</p>
+    <div class="q">"ומה קורה לפסולת שנשארת בחוף?"</div>
+    <p>בשלב הזה אין צורך לתת את כל התשובות, המטרה היא לעורר סקרנות לקראת הפעילות.</p>
+  </div>
+</section>
+
+<!-- ============ 2 ============ -->
+<section class="station" data-t="לאן הפסולת נודדת">
+  <div class="kicker">תחנה 2</div>
+  <h1>לאן נודדת הפסולת?</h1>
+  <p class="lead">פסולת שנשארת על החוף לא בהכרח נשארת במקום שבו הושלכה. בחרו מסלול ועקבו אחריו.</p>
+
+  <svg id="pathSvg" viewBox="0 0 800 300" preserveAspectRatio="xMidYMid meet" aria-label="מסלולי הפסולת מהחוף אל הים">
+    <defs>
+      <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#CFEEF9"/><stop offset="1" stop-color="#EAF7FC"/></linearGradient>
+      <linearGradient id="water" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7FCBE8"/><stop offset="1" stop-color="#2E93C0"/></linearGradient>
+      <linearGradient id="sandg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F2E4C6"/><stop offset="1" stop-color="#DFC99C"/></linearGradient>
+    </defs>
+    <rect width="800" height="300" fill="url(#sky)"/>
+    <path d="M0,300 L0,120 Q120,105 240,125 L300,300 Z" fill="url(#water)"/>
+    <path d="M240,125 Q400,150 800,135 L800,300 L300,300 Z" fill="url(#sandg)"/>
+    <path d="M232,120 q18,10 40,4 q22,-6 40,6 q20,10 40,0" stroke="#fff" stroke-width="4" fill="none" opacity=".75"/>
+    <!-- drain -->
+    <rect x="470" y="150" width="54" height="16" rx="4" fill="#9FAFB8"/>
+    <rect x="474" y="154" width="46" height="8" rx="3" fill="#5D717D"/>
+    <text x="497" y="190" font-size="19" font-weight="700" text-anchor="middle" fill="#5D717D" font-family="Assistant,Arial">תעלת ניקוז</text>
+    <!-- bird -->
+    <text id="birdIcon" x="690" y="120" font-size="40" text-anchor="middle">🐦</text>
+    <!-- source trash -->
+    <text id="srcIcon" x="640" y="222" font-size="36" text-anchor="middle">🛍️</text>
+    <text x="640" y="256" font-size="19" font-weight="700" text-anchor="middle" fill="#8A7550" font-family="Assistant,Arial">שקית על החול</text>
+    <text x="120" y="70" font-size="21" font-weight="800" text-anchor="middle" fill="#fff" font-family="Assistant,Arial" opacity=".9">הים</text>
+    <!-- invisible routes -->
+    <path id="r1" d="M640,212 C540,170 400,150 250,150" fill="none" stroke="none"/>
+    <path id="r2" d="M640,212 C580,205 540,180 497,160 C420,160 330,175 250,190" fill="none" stroke="none"/>
+    <path id="r3" d="M640,212 C670,190 690,160 690,128" fill="none" stroke="none"/>
+    <path id="r4" d="M640,212 C620,232 600,232 580,240 C560,248 540,248 520,252" fill="none" stroke="none"/>
+    <g id="travel" opacity="0"><text id="travelIcon" font-size="26" text-anchor="middle">🛍️</text></g>
+    <g id="trailG"><path id="trail" fill="none" stroke="#0871B9" stroke-width="5" stroke-dasharray="9 9" stroke-linecap="round" opacity=".85"/></g>
+  </svg>
+
+  <div class="pathgrid" id="pathGrid">
+    <button class="pathbtn" data-p="1"><span class="em">💨</span>רוח</button>
+    <button class="pathbtn" data-p="2"><span class="em">🌧️</span>גשם וניקוז</button>
+    <button class="pathbtn" data-p="3"><span class="em">🐦</span>בעל חיים</button>
+    <button class="pathbtn" data-p="4"><span class="em">🧩</span>התפרקות</button>
+  </div>
+  <div class="pathmsg" id="pathMsg">בחרו מסלול כדי לראות מה קורה.</div>
+
+  <div class="reveal" id="pathDone" style="margin-top:16px">
+    <div class="card">
+      <p style="margin:0 0 10px"><b>ארבעה מסלולים, יעד אחד.</b> מה שנשאר על החול לא נשאר על החול. רובו מגיע לים, ורובו עשוי מחומר אחד.</p>
+      <button class="btn" onclick="go(3)">איזה חומר? →</button>
+    </div>
+  </div>
+
+  <div class="teach">
+    <h4><span class="time">בתוך הפתיחה</span> מסלולי הפסולת</h4>
+    <p>עודדו את הילדים לחשוב על המסלולים לבד לפני שלוחצים: חוף ← רוח ← ים, חוף ← גשם ונגר ← ים, חוף ← בעלי חיים, חוף ← התפרקות לחלקיקים קטנים.</p>
+    <p>שווה לחבר לנגר העירוני: פסולת שנזרקת ברחוב בעיר מגיעה גם היא דרך תעלות הניקוז אל הים, לא רק פסולת שנשארה בחוף עצמו.</p>
+  </div>
+</section>
+
+<!-- ============ 3 ============ -->
+<section class="station" data-t="דקות מול שנים">
+  <div class="kicker">תחנה 3</div>
+  <h1>דקות של שימוש, שנים בסביבה</h1>
+  <p class="lead">פלסטיק הוא חומר מצוין. זול, קל, חזק וגמיש, ולכן הוא נמצא כמעט בכל מקום.
+  הבעיה מתחילה כשמשתמשים בו כמה דקות בלבד.</p>
+
+  <div class="card">
+    <div class="lifecard">
+      <div class="em" id="lifeEm">🥤</div>
+      <div>
+        <h2 style="margin:0 0 4px" id="lifeName">כוס חד־פעמית</h2>
+        <p class="hint" style="margin:0 0 14px">כמה זמן לדעתכם הפריט הזה יכול להישאר בסביבה?</p>
+        <div id="guessArea">
+          <input class="slider" id="guess" type="range" min="1" max="500" value="50">
+          <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--muted);font-weight:700">
+            <span>שנה</span><span id="guessVal" class="big">50 שנה</span><span>500 שנה</span>
+          </div>
+          <button class="btn" style="margin-top:12px" id="guessBtn">זו הניחוש שלי</button>
+        </div>
+        <div id="lifeAns" class="reveal">
+          <div class="bars">
+            <div class="barrow"><span class="lbl">בשימוש שלנו</span><div class="bartrack use"><i id="barUse"></i></div><span id="useTxt"></span></div>
+            <div class="barrow"><span class="lbl">נשאר בסביבה</span><div class="bartrack env"><i id="barEnv"></i></div><span id="envTxt"></span></div>
+          </div>
+          <p id="lifeFeedback" style="font-weight:700;color:var(--slate);margin:10px 0 0"></p>
+          <button class="btn ghost" style="margin-top:12px" id="lifeNext">הפריט הבא →</button>
+        </div>
+      </div>
+    </div>
+    <div class="dots" id="lifeDots"></div>
+    <p class="hint" style="margin:14px 0 0;text-align:center">הערכות מקובלות בספרות הסביבתית. משך ההתפרקות משתנה מאוד לפי תנאי הסביבה.</p>
+  </div>
+
+  <div class="reveal" id="lifeDone" style="margin-top:16px">
+    <div class="card">
+      <p style="margin:0 0 8px"><b>שימו לב לפער.</b> משתמשים דקות, נשאר שנים. וגם אז הפלסטיק לא באמת "נעלם", הוא רק נעשה קטן יותר.</p>
+      <button class="btn" onclick="go(4)">קטן יותר? →</button>
+    </div>
+  </div>
+
+  <div class="teach">
+    <h4><span class="time">7 עד 10 דקות</span> פלסטיק, חומר שימושי שהפך לבעיה</h4>
+    <p>שלושה מסרים מרכזיים:</p>
+    <ul>
+      <li><b>פלסטיק נשאר בסביבה זמן רב.</b> מוצר חד־פעמי משמש אותנו דקות ספורות ונשאר עשרות ואף מאות שנים.</li>
+      <li><b>פלסטיק יכול להגיע מהחוף לים.</b> הוא לא נשאר במקום שבו הושלך.</li>
+      <li><b>פלסטיק אינו פשוט "נעלם".</b> עם הזמן הוא מתפרק לחתיכות קטנות יותר.</li>
+    </ul>
+    <div class="q">"מה לדעתכם יקרה לפריט הזה בעוד שנה? ובעוד עשר שנים?"</div>
+    <p>אין צורך להיכנס לפרטים כימיים. אם יש בכיתה פריטים אמיתיים, אפשר להרים אותם ולשאול לפני הלחיצה על המסך.</p>
+  </div>
+</section>
+
+<!-- ============ 4 ============ -->
+<section class="station" data-t="ציד מיקרופלסטיק">
+  <div class="kicker">תחנה 4</div>
+  <h1>ציד מיקרופלסטיק</h1>
+  <p class="lead">כשחתיכת פלסטיק גדולה מתפרקת לחתיכות קטנות, הבעיה לא נפתרת. היא נעשית קשה יותר לטיפול.
+  העבירו את זכוכית המגדלת על החול ולחצו על כל חלקיק שתמצאו.</p>
+
+  <div class="sandwrap" id="sandWrap">
+    <canvas id="sandCanvas"></canvas>
+    <div id="plasticLayer"></div>
+    <div id="lens"></div>
+    <div class="sandtip">הזיזו את העכבר או את האצבע על החול. לחצו על כל חלקיק צבעוני.</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px;margin-top:12px;flex-wrap:wrap">
+    <span class="counter" id="microCount">0 מתוך 14 חלקיקים</span>
+    <button class="btn ghost" id="microSkip" style="padding:8px 16px;font-size:14px">קשה מדי, ממשיכים</button>
+  </div>
+
+  <div class="reveal" id="microDone" style="margin-top:16px">
+    <div class="card">
+      <h2 style="margin-top:0">זה בדיוק העניין</h2>
+      <p>קשה, נכון? וזה רק על מסך. בחול אמיתי החלקיקים קטנים עוד יותר, ולפעמים בכלל לא נראים לעין.</p>
+      <p style="font-size:19px;font-weight:800;color:var(--blue)">כשהפלסטיק נעשה קטן יותר, הרבה יותר קשה לאסוף אותו.
+      לכן עדיף למנוע ממנו להגיע לסביבה מלכתחילה.</p>
+      <button class="btn" onclick="go(5)">כמה פלסטיק מגיע לים? →</button>
+    </div>
+  </div>
+
+  <div class="teach">
+    <h4><span class="time">5 עד 7 דקות</span> מיקרופלסטיק</h4>
+    <p><b>מיקרופלסטיק</b> הוא חלקיקי פלסטיק זעירים מאוד, שנוצרים כשפלסטיק גדול מתפרק לאורך זמן.</p>
+    <div class="q">"האם אתם מצליחים לזהות בתוך החול חתיכות פלסטיק קטנות?"</div>
+    <p>המשחק הזה הוא הדמיה. אם הפעילות מתקיימת אחר כך בחוף, חזרו לשאלה בשטח ובקשו מהתלמידים לבחון חופן חול אמיתי.</p>
+    <p><b>משפט מפתח לסיכום התחנה:</b> כשהפלסטיק נעשה קטן יותר, הרבה יותר קשה לאסוף אותו, ולכן עדיף למנוע ממנו להגיע לסביבה מלכתחילה.</p>
+  </div>
+</section>
+
+<!-- ============ 5 ============ -->
+<section class="station" data-t="כמה גדול הסיפור">
+  <div class="kicker">תחנה 5</div>
+  <h1>כמה גדול הסיפור?</h1>
+  <p class="lead">בכל שנה מגיעים לים כ־11 מיליון טון פלסטיק. קשה לדמיין מספר כזה, אז בואו נראה אותו זז.</p>
+
+  <div class="livebox">
+    <small>מאז שנכנסתם לתחנה הזו, הגיעו לים בערך</small>
+    <span class="num" id="liveKg">0</span>
+    <small>קילוגרם פלסטיק</small>
+    <div class="road"><span class="truck">🚚</span></div>
+    <small style="margin-top:10px">זה בערך <b>שתי משאיות</b> של פלסטיק שמרוקנות את תוכנן לים <b>בכל דקה</b>.
+    עד עכשיו: <b id="truckCount">0</b> משאיות</small>
+  </div>
+
+  <div class="statgrid">
+    <div class="stat"><b>41%</b><span>מהפסולת בישראל היא פלסטיק</span></div>
+    <div class="stat"><b>90%+</b><span>מהפסולת בחופי ישראל היא פלסטיק חד־פעמי</span></div>
+    <div class="stat"><b>11M</b><span>טונות פלסטיק מגיעים לים בשנה</span></div>
+  </div>
+
+  <div class="card" style="margin-top:18px">
+    <h2 style="margin-top:0">אז אם הבעיה כל כך גדולה, האם ניקיון של חוף אחד בכלל משנה?</h2>
+    <button class="btn" id="whyBtn">כן, והנה למה</button>
+    <div class="reveal" id="whyAns" style="margin-top:12px">
+      <p>ניקיון חופים חשוב, כי הוא מוציא פסולת מהסביבה ומאפשר לנו לראות במו עינינו את הבעיה.</p>
+      <p><b>אבל ניקיון לבדו אינו מספיק.</b> אם נמשיך לייצר ולהשתמש בכמויות גדולות של חד־פעמי, נמשיך לייצר פסולת.
+      לכן יש סדר עדיפויות, ובתחנה הבאה תסדרו אותו בעצמכם.</p>
+      <button class="btn" onclick="go(6)">רגע, קודם צב הים →</button>
+    </div>
+  </div>
+
+  <div class="teach">
+    <h4><span class="time">3 עד 5 דקות</span> כמה גדול הסיפור</h4>
+    <p>אין צורך להעמיס בנתונים, שלושת המספרים על המסך מספיקים. המחשה חשובה יותר ממספר מדויק.</p>
+    <div class="q">"אם הבעיה כל כך גדולה, האם ניקיון של חוף אחד בכלל משנה?"</div>
+    <p>זהו מעבר קריטי מהבנה לפעולה. אל תמהרו לענות, תנו לתלמידים להתלבט. הסדר שאליו רוצים להגיע: קודם למנוע, אחר כך להפחית ולהשתמש שוב, אם אפשר לתקן, וכל מה שכבר יוצר, למחזר.</p>
+  </div>
+</section>
+
+<!-- ============ 6 ============ -->
+<section class="station" data-t="ההחלטה של צב הים">
+  <div class="kicker">תחנה 6</div>
+  <h1>אתם צב ים. מה תאכלו?</h1>
+  <p class="lead">צב ים אוהב לאכול מדוזות. לפניכם שישה דברים שצפים במים.
+  לחצו על שלושת אלה שנראים לכם מדוזה.</p>
+
+  <div class="ocean" id="ocean">
+    <div class="ray" style="right:15%"></div>
+    <div class="ray" style="right:45%;width:50px"></div>
+    <div class="ray" style="right:75%;width:90px"></div>
+  </div>
+  <div class="turtleline"><span style="font-size:30px">🐢</span><span id="turtleMsg">בחרו שלושה. הצב סומך עליכם.</span></div>
+
+  <div class="reveal" id="turtleDone" style="margin-top:16px">
+    <div class="card">
+      <h2 style="margin-top:0">למה שצב ים בכלל יאכל שקית פלסטיק?</h2>
+      <p>כי במים, שקית שקופה שמתנופפת נראית כמעט בדיוק כמו מדוזה.
+      <b>בעלי חיים אינם יודעים מהו "זבל" ומהו מוצר שיוצר במפעל.</b> הם פוגשים את הפסולת כחלק מהסביבה שלהם.</p>
+      <p>וזו לא רק בליעה. חוטים, רשתות ופריטי פלסטיק אחרים עלולים לגרום להסתבכות ולפגיעה קשה.
+      וכשהפלסטיק מתפרק לחלקיקים קטנים, הוא נכנס לסביבה הימית ולמערכות המזון.</p>
+      <p style="font-weight:800;color:var(--blue)">לכן הפסולת שאנחנו משאירים בחוף היא לא רק "לכלוך".
+      היא יכולה להפוך לבעיה עבור הים, בעלי החיים וגם עבורנו.</p>
+      <button class="btn" onclick="go(7)">אז מה עושים? →</button>
+    </div>
+  </div>
+
+  <div class="teach">
+    <h4><span class="time">7 עד 10 דקות</span> צבי ים ובעלי חיים</h4>
+    <p>במקום הרצאה כללית על פגיעה בבעלי חיים, התמקדו בסיפור של צב ים כמייצג שמייצר חיבור ורגש.</p>
+    <p>שאלות פתיחה: איפה חי צב ים? מה הוא אוכל? אילו דברים הוא פוגש כשהוא שוחה בים?</p>
+    <div class="q">"למה שצב ים בכלל יאכל שקית פלסטיק?"</div>
+    <p>תנו לתלמידים להציע השערות <b>לפני</b> שאתם מסבירים. המשחק תוכנן כך שקל לטעות, וזו בדיוק הנקודה. אם הכיתה טועה, אל תתקנו מיד, שאלו "מה הטעה אתכם?".</p>
+  </div>
+</section>
+
+<!-- ============ 7 ============ -->
+<section class="station" data-t="פירמידת 5 הR">
+  <div class="kicker">תחנה 7</div>
+  <h1>פירמידת 5 ה־R</h1>
+  <p class="lead">לא כל פתרון מתחיל במיחזור. יש סדר עדיפויות.
+  סדרו את חמשת השלבים מהחשוב ביותר (1) לאחרון (5) בעזרת החצים.</p>
+
+  <ul class="rlist" id="rList"></ul>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:6px">
+    <button class="btn" id="rCheck">בדקו אותי</button>
+    <button class="btn ghost" id="rSolve">הראו לי את התשובה</button>
+  </div>
+  <p id="rMsg" style="font-weight:800;margin-top:12px"></p>
+
+  <div class="reveal" id="rDone">
+    <p class="hint" style="text-align:center;margin:20px 0 6px">ככל שהשלב רחב יותר, כך הוא עדיף</p>
+    <div class="pyr" id="pyr"></div>
+    <div class="card" style="margin-top:18px">
+      <p style="margin:0;font-size:19px;font-weight:800;color:var(--blue)">זכרו: הפתרון הטוב ביותר הוא לא לייצר את הפסולת מלכתחילה.</p>
+      <p>מיחזור הוא חשוב, אבל הוא לא הפתרון הראשון. הוא האחרון ברשימה.</p>
+      <button class="btn" onclick="go(8)">מה אני אעשה אחרת? →</button>
+    </div>
+  </div>
+
+  <div class="teach">
+    <h4><span class="time">בתוך חלק הפעולה</span> היכרות עם חמשת ה־R</h4>
+    <p>לחיצה על כל שורה פותחת את ההסבר המלא שלה. אחרי הבדיקה, עברו שלב שלב ובקשו דוגמה מהחיים של התלמידים לכל שלב.</p>
+    <p>הדגישו: העדיפות הראשונה היא למנוע פסולת. המיחזור נמצא בסוף הרשימה, לא בהתחלה. זו לרוב ההפתעה הגדולה של השיעור, כי ילדים מגיעים עם "מיחזור = הפתרון".</p>
+  </div>
+</section>
+
+<!-- ============ 8 ============ -->
+<section class="station" data-t="ההתחייבות שלי">
+  <div class="kicker">תחנה 8</div>
+  <h1>מה אני אעשה אחרת?</h1>
+  <p class="lead">לא רשימת טיפים. בחרו <b>שלושה דברים</b> שאתם באמת מתכוונים לעשות בביקור הבא שלכם בחוף.</p>
+
+  <div class="pickgrid" id="pledgeGrid"></div>
+  <p class="hint" id="pledgeCount" style="margin-top:10px">נבחרו 0 מתוך 3</p>
+
+  <div class="reveal" id="pledgeDone">
+    <div class="card" style="margin-top:6px;border-color:var(--light);background:var(--wash)">
+      <h2 style="margin-top:0">ההתחייבות שלי לחוף</h2>
+      <ul id="pledgeList" style="font-size:17px;line-height:1.9;font-weight:700;color:var(--slate)"></ul>
+    </div>
+  </div>
+
+  <h2>וכשעושים את זה ביחד</h2>
+  <div class="card">
+    <div class="calc">
+      <span>בכיתה שלנו</span>
+      <input type="number" id="nStudents" value="30" min="1" max="300">
+      <span>תלמידים, וכל אחד יאסוף</span>
+      <input type="number" id="nItems" value="10" min="1" max="200">
+      <span>פריטי פסולת.</span>
+    </div>
+    <div class="result"><b id="calcOut">300</b><span>פריטי פסולת שהכיתה שלנו מוציאה מהחוף ביום אחד</span></div>
+    <p style="margin:14px 0 0;font-weight:700;color:var(--slate)">פעולה קטנה של אדם אחד יכולה להפוך לפעולה גדולה כשעושים אותה יחד.</p>
+    <button class="btn" style="margin-top:14px" onclick="go(9)">מוכנים לניקיון →</button>
+  </div>
+
+  <div class="teach">
+    <h4><span class="time">5 דקות</span> מה עוד אפשר לעשות</h4>
+    <p>במקום רשימה ארוכה של טיפים, בקשו מהתלמידים לנסח "שלושה דברים שאני יכול לעשות בביקור הבא שלי בחוף". הבחירה האישית שווה יותר מרשימה שהוכתבה.</p>
+    <p>במחשבון: אפשר להזין את מספר התלמידים האמיתי בכיתה, ואז להכפיל במספר הכיתות בבית הספר. זה הרגע שבו המספר הופך למוחשי.</p>
+    <p>הדגישו שוב: מיחזור חשוב, אבל הדרך הטובה ביותר להתמודד עם פסולת היא להפחית את הצריכה שלה מלכתחילה.</p>
+  </div>
+</section>
+
+<!-- ============ 9 ============ -->
+<section class="station" data-t="יוצאים לניקיון">
+  <div class="kicker">תחנה 9</div>
+  <h1>ועכשיו, יוצאים לניקיון</h1>
+  <p class="lead">אנחנו כבר יודעים מה הבעיה. שהפסולת מגיעה מהחוף אל הים. שפלסטיק נשאר בסביבה זמן רב ומתפרק לחלקיקים קטנים.
+  ושבעלי חיים נפגעים ממנו. עכשיו הגיע הזמן לראות את זה בעצמנו.</p>
+
+  <div class="card" style="border-right:6px solid var(--teal)">
+    <p style="margin:0;font-size:18px;font-weight:700;color:var(--slate)">
+      בכל הארץ, בו זמנית, קבוצות של מתנדבים ותלמידים כמוכם ינקו חופים ונחלים.
+      תחשבו איזו עוצמה ואיזה מסר חשוב יש לזה.</p>
+  </div>
+
+  <h2>משימת חקר ליום הניקיון</h2>
+  <p>במהלך הניקיון נסו לגלות:</p>
+  <div class="pickgrid" style="margin-bottom:16px">
+    <div class="pick" style="cursor:default"><span class="em">🔎</span>איזו פסולת אנחנו מוצאים?</div>
+    <div class="pick" style="cursor:default"><span class="em">⚖️</span>כמה פסולת נאסוף?</div>
+    <div class="pick" style="cursor:default"><span class="em">📊</span>איזה סוג פסולת מופיע הכי הרבה?</div>
+    <div class="pick" style="cursor:default"><span class="em">🧭</span>מאיפה לדעתנו היא הגיעה?</div>
+    <div class="pick" style="cursor:default"><span class="em">🛑</span>מה היה אפשר למנוע מלכתחילה?</div>
+    <div class="pick" style="cursor:default"><span class="em">♻️</span>האם רוב הפסולת היא חד־פעמית?</div>
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:0">שאלת החקר שלי</h2>
+    <p class="hint" style="margin-top:0">חשבו על שאלה אחת שאתם רוצים לקבל עליה תשובה במהלך יום הניקיון. כתבו אותה כאן, היא תישמר במכשיר.</p>
+    <textarea id="myQ" placeholder="השאלה שלי היא..."></textarea>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+      <button class="btn" id="saveQ">שמירה</button>
+      <button class="btn ghost" onclick="window.print()">הדפסה</button>
+      <button class="btn ghost" onclick="go(10)">פרטי יום הניקיון →</button>
+    </div>
+    <p class="hint" id="qSaved"></p>
+  </div>
+
+  <div class="teach">
+    <h4>הכנה ליום הניקיון</h4>
+    <p>חלקו לתלמידים משימת חקר. כל תלמיד או קבוצה שמים לב ל: איזה סוג פסולת מצאנו, מהו הפריט הנפוץ ביותר, האם רוב הפסולת היא פלסטיק, אילו פריטים אפשר היה למנוע מלכתחילה, אילו היו חד־פעמיים, אילו נראים כאילו הגיעו מבילוי בחוף ואילו הגיעו ממקום אחר.</p>
+    <div class="q">שאלת החקר המרכזית: "מה הפסולת בחוף יכולה ללמד אותנו על הדרך שבה בני אדם משתמשים בפלסטיק?"</div>
+    <p>אין צורך לתת לתלמידים את התשובה מראש. המטרה היא שהם יגיעו אליה באמצעות ההתנסות ביום הניקיון.</p>
+  </div>
+</section>
+
+<!-- ============ 10 ============ -->
+<section class="station" data-t="נרשמים">
+  <div class="kicker">תחנה 10</div>
+  <h1>יום ניקיון החופים הגדול</h1>
+
+  <div class="eventcard">
+    <h3>נפגשים בחוף</h3>
+    <p>ניקיון החופים והנחלים הארצי של עמותת "צלול". קבוצות מכל הארץ, באותו יום, באותה שעה.</p>
+    <div class="eventrow">
+      <div><b id="evDate">16.10.2026</b><span>יום שישי</span></div>
+      <div><b>כל הארץ</b><span>חופים ונחלים מצפון ועד דרום</span></div>
+      <div><b>בחינם</b><span>הציוד מחכה באתר</span></div>
+    </div>
+    <a class="cta" href="https://zalul.org.il/cleaning-day-2026/" target="_blank" rel="noopener">לעמוד יום הניקיון והרשמה</a>
+    <a class="cta line" href="https://zalul.org.il/register-hovala-2026/" target="_blank" rel="noopener">הרשמה להובלת אתר</a>
+  </div>
+
+  <div class="card" style="margin-top:18px">
+    <h2 style="margin-top:0">ומה עושים בכל שאר ימות השנה?</h2>
+    <p>קמפיין <b>"מרימים אחד ביום"</b> של המועצה לישראל יפה. פריט פסולת אחד ביום, כל יום, כל אחד.</p>
+    <a class="cta" style="background:var(--blue);color:#fff" href="https://merimim.israel-yafa.org.il/" target="_blank" rel="noopener">merimim.israel-yafa.org.il</a>
+  </div>
+
+  <div class="card" style="margin-top:18px;text-align:center">
+    <p style="margin:0 auto;font-size:20px;font-weight:800;color:var(--blue)">
+      "ראינו את הבעיה. הבנו לאן הפסולת יכולה להגיע. הבנו איך היא יכולה להשפיע על בעלי החיים.<br>
+      עכשיו אנחנו יוצאים לעשות משהו בקנה מידה קטן, אבל אמיתי."</p>
+    <p class="hint" style="margin:16px auto 0">צלול · עמותה להגנת הים, החופים והנחלים · להגנת הים, האדם והסביבה</p>
+  </div>
+
+  <div class="teach">
+    <h4>סיום</h4>
+    <p>כאן הופכים את הניקיון מהודעה טכנית לפעולה בעלת משמעות. הדגישו שמעצם ההגעה לפעילות אנחנו מהווים דוגמה אישית לכל מי שנמצא בחוף באותו יום.</p>
+    <p><b>לבדיקה לפני השיעור:</b> אשרו מול העמוד באתר צלול את התאריך, השעות ואתר הניקיון שאליו הכיתה נרשמת, ועדכנו את הפרטים בכרטיס למעלה בהתאם.</p>
+  </div>
+</section>
+
+</div><!-- /wrap -->
+
+<nav class="nav">
+  <button class="nb" id="prev" aria-label="הקודם">→</button>
+  <div class="steps" id="steps"></div>
+  <button class="nb" id="next" aria-label="הבא">←</button>
+</nav>
+
+<script>
+/* ===================== navigation ===================== */
+const stations=[...document.querySelectorAll('.station')];
+const stepsEl=document.getElementById('steps');
+const bar=document.getElementById('bar');
+
+/* מצב דוגמית: ?only=1,4,6 מצמצם למספר תחנות נבחרות.
+   בלי הפרמטר, כל 11 התחנות פעילות כרגיל. */
+const qs=new URLSearchParams(location.search);
+const only=qs.get('only');
+const allow = only
+  ? [...new Set(only.split(',').map(n=>parseInt(n,10)).filter(n=>n>=0&&n<stations.length))].sort((a,b)=>a-b)
+  : stations.map((_,i)=>i);
+if(!allow.length) allow.push(0);
+if(only) document.body.classList.add('demo');
+
+let cur=allow[0], seen=new Set([cur]);
+
+allow.forEach(i=>{
+  const b=document.createElement('b');
+  b.title=stations[i].dataset.t||('תחנה '+i);
+  b.onclick=()=>go(i);
+  stepsEl.appendChild(b);
+});
+/* מצמיד כל בקשת ניווט לתחנה המותרת הקרובה קדימה */
+function snap(i){
+  return allow.find(a=>a>=i) ?? allow[allow.length-1];
+}
+function go(i){
+  const t=snap(i);
+  if(t===undefined)return;
+  stations[cur].classList.remove('active');
+  cur=t; seen.add(t);
+  stations[cur].classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+  paint();
+  if(t===4) initSand();
+  if(t===5) startLive();
+  if(t===6) initTurtle();
+}
+function paint(){
+  const pos=allow.indexOf(cur);
+  [...stepsEl.children].forEach((b,i)=>{
+    b.className = i===pos?'on':(seen.has(allow[i])?'seen':'');
+  });
+  bar.style.width = (allow.length<2?100:pos/(allow.length-1)*100)+'%';
+  document.getElementById('prev').disabled = pos<=0;
+  document.getElementById('next').disabled = pos>=allow.length-1;
+}
+const step=d=>{const p=allow.indexOf(cur)+d; if(p>=0&&p<allow.length) go(allow[p]);};
+document.getElementById('prev').onclick=()=>step(-1);
+document.getElementById('next').onclick=()=>step(1);
+document.addEventListener('keydown',e=>{
+  if(e.target.matches('input,textarea'))return;
+  if(e.key==='ArrowLeft')step(1);
+  if(e.key==='ArrowRight')step(-1);
+});
+if(cur!==0){
+  stations[0].classList.remove('active');
+  stations[cur].classList.add('active');
+  /* התחנה הפותחת בדוגמית זקוקה לאתחול משלה */
+  if(cur===4) requestAnimationFrame(initSand);
+  if(cur===5) startLive();
+  if(cur===6) initTurtle();
+}
+paint();
+
+/* teacher mode */
+const tb=document.getElementById('teachBtn');
+if(localStorage.getItem('zl_teacher')==='1'){document.body.classList.add('teacher');tb.classList.add('on');}
+tb.onclick=()=>{
+  const on=document.body.classList.toggle('teacher');
+  tb.classList.toggle('on',on);
+  localStorage.setItem('zl_teacher',on?'1':'0');
+};
+
+/* ===================== 1. beach ===================== */
+const TRASH=[
+  {e:'🧴',n:'בקבוק פלסטיק',x:18,y:62},{e:'🛍️',n:'שקית',x:36,y:80},
+  {e:'🥤',n:'כוס חד־פעמית',x:55,y:66},{e:'🍬',n:'עטיפת ממתק',x:72,y:84},
+  {e:'🚬',n:'בדל סיגריה',x:88,y:70},{e:'🧸',n:'צעצוע שנשבר',x:27,y:90},
+  {e:'🧃',n:'שתייה בקרטון',x:64,y:54},{e:'🍴',n:'כלי אוכל',x:46,y:92}
+];
+const beach=document.getElementById('beach');
+const bag=document.getElementById('beachBag');
+let found=0;
+TRASH.forEach((t,i)=>{
+  const el=document.createElement('div');
+  el.className='trash'; el.textContent=t.e; el.title='פריט פסולת';
+  el.style.left='calc('+t.x+'% - 16px)'; el.style.top='calc('+t.y+'% - 34px)';
+  el.onclick=()=>{
+    if(el.classList.contains('got'))return;
+    el.classList.add('got'); found++;
+    const c=document.createElement('span');
+    c.className='chip'; c.innerHTML='<span>'+t.e+'</span>'+t.n;
+    bag.appendChild(c);
+    document.getElementById('beachCount').textContent=found+' מתוך 8';
+    if(found===TRASH.length) finishBeach();
+  };
+  beach.appendChild(el);
+});
+function finishBeach(){document.getElementById('beachDone').classList.add('show');}
+document.getElementById('beachSkip').onclick=finishBeach;
+
+/* ===================== 2. paths ===================== */
+const PATHS={
+  1:{icon:'🛍️',msg:'💨 הרוח מגלגלת את השקית הקלה על החול, ישר אל תוך המים. שקית לא צריכה שאף אחד יזרוק אותה לים.'},
+  2:{icon:'🥤',msg:'🌧️ גשם שוטף את הפסולת מהחול ומהרחוב, דרך תעלות הניקוז, אל הים. גם זבל שנזרק בעיר יכול להגיע לשם.'},
+  3:{icon:'🍬',msg:'🐦 ציפור מזהה עטיפה צבעונית, חושבת שזה אוכל, ולוקחת אותה. הפסולת נכנסת לשרשרת המזון.'},
+  4:{icon:'🧩',msg:'🧩 שמש, מלח וגלים מפוררים את הפלסטיק לחתיכות קטנות יותר ויותר, עד שכמעט אי אפשר לראות אותן.'}
+};
+let pathsDone=new Set(), anim=null;
+document.getElementById('pathGrid').onclick=e=>{
+  const b=e.target.closest('.pathbtn'); if(!b)return;
+  const p=b.dataset.p;
+  [...document.querySelectorAll('.pathbtn')].forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); b.classList.add('done');
+  document.getElementById('pathMsg').textContent=PATHS[p].msg;
+  runPath(p);
+  pathsDone.add(p);
+  if(pathsDone.size===4) document.getElementById('pathDone').classList.add('show');
+};
+function runPath(p){
+  const path=document.getElementById('r'+p);
+  const g=document.getElementById('travel'), ic=document.getElementById('travelIcon');
+  const trail=document.getElementById('trail');
+  const len=path.getTotalLength();
+  ic.textContent=PATHS[p].icon;
+  trail.setAttribute('d',path.getAttribute('d'));
+  trail.style.strokeDasharray=len+' '+len;
+  trail.style.strokeDashoffset=len;
+  g.setAttribute('opacity','1');
+  cancelAnimationFrame(anim);
+  const dur=2200, t0=performance.now();
+  (function step(now){
+    const k=Math.min(1,(now-t0)/dur);
+    const e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
+    const pt=path.getPointAtLength(e*len);
+    ic.setAttribute('x',pt.x); ic.setAttribute('y',pt.y);
+    ic.setAttribute('transform','rotate('+(e*360*(p==4?2:.4))+' '+pt.x+' '+pt.y+')');
+    trail.style.strokeDashoffset=len*(1-e);
+    if(k<1) anim=requestAnimationFrame(step);
+    else if(p==4){ic.textContent='·  ·  ·';ic.setAttribute('font-size','26');}
+  })(t0);
+  ic.setAttribute('font-size','34');
+}
+
+/* ===================== 3. lifespan ===================== */
+const LIFE=[
+  {e:'🥤',n:'כוס חד־פעמית',use:'כ־15 דקות',years:50},
+  {e:'🛍️',n:'שקית ניילון',use:'כ־12 דקות',years:20},
+  {e:'🧴',n:'בקבוק פלסטיק',use:'כ־20 דקות',years:450},
+  {e:'🥢',n:'קשית',use:'כ־20 דקות',years:200},
+  {e:'🚬',n:'בדל סיגריה',use:'כ־5 דקות',years:10}
+];
+let li=0;
+const dotsEl=document.getElementById('lifeDots');
+LIFE.forEach((_,i)=>{const d=document.createElement('i');dotsEl.appendChild(d);});
+const gs=document.getElementById('guess'), gv=document.getElementById('guessVal');
+/* בעברית: 2 עד 10 מקבלים "שנים", 11 ומעלה "שנה" */
+const yr=n=>n+(n>=2&&n<=10?' שנים':' שנה');
+gs.oninput=()=>gv.textContent=yr(+gs.value);
+function loadLife(){
+  const it=LIFE[li];
+  document.getElementById('lifeEm').textContent=it.e;
+  document.getElementById('lifeName').textContent=it.n;
+  document.getElementById('lifeAns').classList.remove('show');
+  document.getElementById('guessArea').style.display='block';
+  gs.value=50; gv.textContent=yr(50);
+  [...dotsEl.children].forEach((d,i)=>d.className=i===li?'on':'');
+  document.getElementById('lifeNext').textContent = li===LIFE.length-1 ? 'סיימנו את הסבב →' : 'הפריט הבא →';
+}
+document.getElementById('guessBtn').onclick=()=>{
+  const it=LIFE[li], g=+gs.value;
+  document.getElementById('guessArea').style.display='none';
+  document.getElementById('lifeAns').classList.add('show');
+  document.getElementById('useTxt').textContent=it.use;
+  document.getElementById('envTxt').textContent='כ־'+yr(it.years);
+  document.getElementById('barUse').style.width='0%';
+  document.getElementById('barEnv').style.width='0%';
+  setTimeout(()=>{
+    document.getElementById('barUse').style.width='2%';
+    document.getElementById('barEnv').style.width=Math.max(8,(it.years/500)*100)+'%';
+  },60);
+  const diff=Math.abs(g-it.years);
+  let msg;
+  if(diff<=15) msg='קליעה מצוינת. ניחשתם '+yr(g)+', והאומדן המקובל הוא כ־'+yr(it.years)+'.';
+  else if(g<it.years) msg='ניחשתם '+yr(g)+', אבל האומדן המקובל גבוה יותר: כ־'+yr(it.years)+'.';
+  else msg='ניחשתם '+yr(g)+', והאומדן המקובל נמוך יותר: כ־'+yr(it.years)+'. עדיין הרבה מאוד זמן.';
+  document.getElementById('lifeFeedback').textContent=msg;
+};
+document.getElementById('lifeNext').onclick=()=>{
+  if(li===LIFE.length-1){document.getElementById('lifeDone').classList.add('show');return;}
+  li++; loadLife();
+};
+[...dotsEl.children].forEach((d,i)=>d.onclick=()=>{li=i;loadLife();});
+loadLife();
+
+/* ===================== 4. microplastic ===================== */
+let sandReady=false;
+const SPECK_COLORS=['#E94F37','#2E86DE','#27AE60','#F39C12','#8E44AD','#16A085','#E84393'];
+function initSand(){
+  if(sandReady)return; sandReady=true;
+  const wrap=document.getElementById('sandWrap');
+  const cv=document.getElementById('sandCanvas');
+  const layer=document.getElementById('plasticLayer');
+  const lens=document.getElementById('lens');
+  const W=wrap.clientWidth, H=wrap.clientHeight, dpr=Math.min(2,window.devicePixelRatio||1);
+  cv.width=W*dpr; cv.height=H*dpr; cv.style.width=W+'px'; cv.style.height=H+'px';
+  const ctx=cv.getContext('2d'); ctx.scale(dpr,dpr);
+  ctx.fillStyle='#E8D7B5'; ctx.fillRect(0,0,W,H);
+  const pal=['#D9C49C','#F1E2C2','#CBB693','#EFDDB8','#BFA87F','#F6ECD4','#A8916A'];
+  for(let i=0;i<26000;i++){
+    ctx.fillStyle=pal[(Math.random()*pal.length)|0];
+    ctx.globalAlpha=.35+Math.random()*.55;
+    const s=.8+Math.random()*2.1;
+    ctx.fillRect(Math.random()*W,Math.random()*H,s,s);
+  }
+  ctx.globalAlpha=1;
+  // a few shells for charm
+  ['🐚','🦪','🐚'].forEach((s,i)=>{
+    ctx.font='22px serif'; ctx.globalAlpha=.75;
+    ctx.fillText(s, 40+i*(W/3.2)+Math.random()*40, 50+Math.random()*(H-90));
+  });
+  ctx.globalAlpha=1;
+
+  const N=14; let got=0;
+  layer.innerHTML='';
+  for(let i=0;i<N;i++){
+    const d=document.createElement('div');
+    d.className='speck';
+    const w=3+Math.random()*4, h=3+Math.random()*4;
+    d.style.width=w+'px'; d.style.height=h+'px';
+    d.style.background=SPECK_COLORS[i%SPECK_COLORS.length];
+    d.style.left=(20+Math.random()*(W-50))+'px';
+    d.style.top=(20+Math.random()*(H-60))+'px';
+    d.style.transform='rotate('+(Math.random()*90)+'deg)';
+    d.onclick=ev=>{
+      ev.stopPropagation();
+      if(d.classList.contains('got'))return;
+      d.classList.add('got'); got++;
+      document.getElementById('microCount').textContent=got+' מתוך '+N+' חלקיקים';
+      if(got===N) document.getElementById('microDone').classList.add('show');
+    };
+    layer.appendChild(d);
+  }
+  const R=78;
+  function move(x,y){
+    const m='radial-gradient(circle '+R+'px at '+x+'px '+y+'px,#000 72%,transparent 100%)';
+    layer.style.webkitMaskImage=m; layer.style.maskImage=m;
+    lens.style.transform='translate('+(x-80)+'px,'+(y-80)+'px)';
+    lens.style.opacity=1;
+  }
+  wrap.addEventListener('pointermove',e=>{
+    const r=wrap.getBoundingClientRect();
+    move(e.clientX-r.left, e.clientY-r.top);
+  });
+  wrap.addEventListener('pointerleave',()=>{lens.style.opacity=0;});
+  let rt;
+  addEventListener('resize',()=>{
+    clearTimeout(rt);
+    rt=setTimeout(()=>{
+      if(wrap.clientWidth===W)return;
+      sandReady=false; lens.style.opacity=0;
+      document.getElementById('microCount').textContent='0 מתוך 14 חלקיקים';
+      initSand();
+    },250);
+  },{once:true});
+  document.getElementById('microSkip').onclick=()=>{
+    document.getElementById('microDone').classList.add('show');
+    const m='radial-gradient(circle 2000px at 50% 50%,#000 100%,#000 100%)';
+    layer.style.webkitMaskImage=m; layer.style.maskImage=m;
+  };
+}
+
+/* ===================== 5. live counter ===================== */
+let liveStarted=false;
+function startLive(){
+  if(liveStarted)return; liveStarted=true;
+  const KG_PER_SEC = 11e9/ (365.25*24*3600); // ≈ 348 kg
+  const t0=performance.now();
+  const kgEl=document.getElementById('liveKg'), trEl=document.getElementById('truckCount');
+  (function tick(now){
+    const s=(now-t0)/1000;
+    kgEl.textContent=Math.floor(s*KG_PER_SEC).toLocaleString('he-IL');
+    trEl.textContent=Math.floor(s/30);
+    requestAnimationFrame(tick);
+  })(t0);
+}
+document.getElementById('whyBtn').onclick=e=>{
+  document.getElementById('whyAns').classList.add('show');
+  e.target.style.display='none';
+};
+
+/* ===================== 6. turtle ===================== */
+let turtleReady=false;
+function initTurtle(){
+  if(turtleReady)return; turtleReady=true;
+  const oc=document.getElementById('ocean');
+  const items=[
+    {j:true ,x:12,y:18},{j:false,x:38,y:12},{j:true ,x:64,y:22},
+    {j:false,x:20,y:58},{j:true ,x:48,y:62},{j:false,x:76,y:56}
+  ].sort(()=>Math.random()-.5);
+  let picks=0, right=0;
+  items.forEach((it,i)=>{
+    const d=document.createElement('div');
+    d.className='float';
+    d.style.right=it.x+'%'; d.style.top=it.y+'%';
+    d.style.animationDelay=(i*.6)+'s';
+    d.innerHTML = it.j ? jellySVG() : bagSVG();
+    d.onclick=()=>{
+      if(d.classList.contains('judged')||picks>=3)return;
+      d.classList.add('judged'); picks++;
+      const tag=document.createElement('span');
+      tag.className='tag '+(it.j?'ok':'bad');
+      tag.textContent=it.j?'מדוזה ✓':'שקית פלסטיק ✕';
+      d.appendChild(tag);
+      if(it.j)right++;
+      const msg=document.getElementById('turtleMsg');
+      if(picks<3){ msg.textContent='נשארו '+(3-picks)+' בחירות.'; }
+      else{
+        [...oc.querySelectorAll('.float')].forEach(f=>f.classList.add('judged'));
+        revealAll(oc);
+        msg.innerHTML = right===3
+          ? '<b>3 מתוך 3.</b> כל הכבוד, אבל לצב אין זכוכית מגדלת ואין זמן לחשוב.'
+          : '<b>'+right+' מתוך 3.</b> בדיוק בגלל זה צבי ים טועים.';
+        document.getElementById('turtleDone').classList.add('show');
+      }
+    };
+    oc.appendChild(d);
+  });
+  function revealAll(oc){
+    [...oc.querySelectorAll('.float')].forEach(f=>{
+      if(f.querySelector('.tag'))return;
+      const isJ=f.dataset.j==='1';
+      const tag=document.createElement('span');
+      tag.className='tag '+(isJ?'ok':'bad');
+      tag.textContent=isJ?'מדוזה':'שקית פלסטיק';
+      f.appendChild(tag);
+    });
+  }
+  [...oc.querySelectorAll('.float')].forEach((f,i)=>f.dataset.j=items[i].j?'1':'0');
+}
+function jellySVG(){return '<svg width="86" height="96" viewBox="0 0 86 96">'+
+ '<ellipse cx="43" cy="34" rx="30" ry="26" fill="rgba(255,255,255,.62)" stroke="rgba(255,255,255,.85)" stroke-width="2"/>'+
+ '<path d="M14,36 q8,10 0,22 M26,40 q10,14 2,30 M43,42 q-4,18 4,34 M60,40 q-10,14 -2,30 M72,36 q-8,10 0,22" '+
+ 'stroke="rgba(255,255,255,.7)" stroke-width="3" fill="none" stroke-linecap="round"/>'+
+ '<ellipse cx="34" cy="28" rx="6" ry="4" fill="rgba(255,255,255,.55)"/></svg>';}
+function bagSVG(){return '<svg width="86" height="96" viewBox="0 0 86 96">'+
+ '<path d="M16,34 q12,-16 27,-16 q15,0 27,16 q6,26 -3,42 q-10,16 -24,16 q-14,0 -24,-16 q-9,-16 -3,-42 Z" '+
+ 'fill="rgba(255,255,255,.58)" stroke="rgba(255,255,255,.85)" stroke-width="2"/>'+
+ '<path d="M28,26 q6,-14 15,-14 q9,0 15,14" stroke="rgba(255,255,255,.75)" stroke-width="3" fill="none"/>'+
+ '<path d="M30,52 q10,8 24,2 M26,66 q12,10 28,2" stroke="rgba(255,255,255,.5)" stroke-width="2" fill="none"/></svg>';}
+
+/* ===================== 7. five R ===================== */
+const R5=[
+ {n:'מסרבים',en:'REFUSE',d:'לוותר ככל האפשר על מוצר חד־פעמי שאינו נחוץ. לא לקחת ולא להשתמש בו כשאפשר בלעדיו. במקום חד־פעמי, רב־פעמי.',c:'#0871B9'},
+ {n:'מפחיתים',en:'REDUCE',d:'להשתמש בפחות מוצרים חד־פעמיים. גם כשאי אפשר לוותר לגמרי, אפשר להשתמש בפחות.',c:'#0093B7'},
+ {n:'ממלאים ומשתמשים שוב',en:'REFILL / REUSE',d:'להשתמש שוב באותו מוצר, ולמלא בקבוק או כלי במקום לקנות חדש.',c:'#7AC9DE'},
+ {n:'מתקנים ומשתמשים מחדש',en:'REPURPOSE / REPAIR',d:'מתקנים מה שנשבר, או מוצאים לו שימוש חדש לגמרי.',c:'#FFB066'},
+ {n:'ממחזרים',en:'RECYCLE',d:'רק אחרי שהפחתנו את הצריכה, ממחזרים את מה שאפשר, לפי סוג הפסולת והפח המתאים.',c:'#E88B6A'}
+];
+let order=[0,1,2,3,4];
+do{order.sort(()=>Math.random()-.5);}while(order.every((v,i)=>v===i));
+const rList=document.getElementById('rList');
+function drawR(){
+  rList.innerHTML='';
+  order.forEach((idx,pos)=>{
+    const it=R5[idx];
+    const li=document.createElement('li');
+    li.className='rrow';
+    li.innerHTML='<span class="rank">'+(pos+1)+'</span>'+
+      '<div><div class="rname">'+it.n+' <span class="ren">'+it.en+'</span></div><div class="rdesc">'+it.d+'</div></div>'+
+      '<span class="arrows"><button data-d="-1" aria-label="למעלה">▲</button><button data-d="1" aria-label="למטה">▼</button></span>';
+    li.querySelector('.rname').parentElement.onclick=()=>li.classList.toggle('open');
+    li.querySelectorAll('.arrows button').forEach(b=>b.onclick=e=>{
+      e.stopPropagation();
+      const d=+b.dataset.d, np=pos+d;
+      if(np<0||np>4)return;
+      [order[pos],order[np]]=[order[np],order[pos]];
+      drawR();
+    });
+    rList.appendChild(li);
+  });
+}
+drawR();
+document.getElementById('rCheck').onclick=()=>{
+  let ok=0;
+  [...rList.children].forEach((li,i)=>{
+    const good=order[i]===i;
+    li.classList.toggle('ok',good); li.classList.toggle('no',!good);
+    if(good)ok++;
+  });
+  const m=document.getElementById('rMsg');
+  if(ok===5){m.style.color='var(--green)';m.textContent='מדויק. זה בדיוק סדר העדיפויות.';finishR();}
+  else{m.style.color='#C9503A';m.textContent=ok+' מתוך 5 במקום הנכון. רמז: מיחזור הוא לא ההתחלה.';}
+};
+document.getElementById('rSolve').onclick=()=>{
+  order=[0,1,2,3,4]; drawR();
+  [...rList.children].forEach(li=>{li.classList.add('ok','open');});
+  document.getElementById('rMsg').style.color='var(--slate)';
+  document.getElementById('rMsg').textContent='זה הסדר. לחצו על כל שלב כדי לקרוא עליו.';
+  finishR();
+};
+function finishR(){
+  const p=document.getElementById('pyr');
+  if(p.dataset.built)return; p.dataset.built='1';
+  R5.forEach((it,i)=>{
+    const d=document.createElement('div');
+    /* הרחב למעלה: ככל שהשלב עדיף, כך הוא רחב יותר */
+    d.style.background=it.c; d.style.width=(98-i*13)+'%';
+    d.textContent=(i+1)+'. '+it.n+' · '+it.en;
+    if(i>2)d.style.color='#4A2E10';
+    p.appendChild(d);
+  });
+  document.getElementById('rDone').classList.add('show');
+}
+
+/* ===================== 8. pledge ===================== */
+const PLEDGES=[
+ {e:'🚱',t:'להביא פחות מוצרים חד־פעמיים לחוף'},
+ {e:'🍶',t:'להשתמש בבקבוק ובכלים רב־פעמיים'},
+ {e:'🎒',t:'לקחת איתי הביתה את כל מה שהבאתי'},
+ {e:'🚬',t:'לאסוף בדלי סיגריות ולא להשאיר אותם בחול'},
+ {e:'🤲',t:'להרים גם פריט פסולת שלא אני השארתי'},
+ {e:'🗣️',t:'לספר על זה למישהו שלא היה כאן'}
+];
+const pg=document.getElementById('pledgeGrid');
+let picked=[];
+PLEDGES.forEach((p,i)=>{
+  const d=document.createElement('button');
+  d.className='pick'; d.innerHTML='<span class="em">'+p.e+'</span><span>'+p.t+'</span>';
+  d.onclick=()=>{
+    const k=picked.indexOf(i);
+    if(k>-1){picked.splice(k,1);d.classList.remove('on');}
+    else{ if(picked.length>=3)return; picked.push(i); d.classList.add('on'); }
+    document.getElementById('pledgeCount').textContent='נבחרו '+picked.length+' מתוך 3';
+    const done=document.getElementById('pledgeDone');
+    if(picked.length===3){
+      document.getElementById('pledgeList').innerHTML=picked.map(i=>'<li>'+PLEDGES[i].e+' '+PLEDGES[i].t+'</li>').join('');
+      done.classList.add('show');
+    } else done.classList.remove('show');
+  };
+  pg.appendChild(d);
+});
+function calc(){
+  const a=+document.getElementById('nStudents').value||0;
+  const b=+document.getElementById('nItems').value||0;
+  document.getElementById('calcOut').textContent=(a*b).toLocaleString('he-IL');
+}
+document.getElementById('nStudents').oninput=calc;
+document.getElementById('nItems').oninput=calc;
+calc();
+
+/* ===================== 9. my question ===================== */
+const myQ=document.getElementById('myQ');
+myQ.value=localStorage.getItem('zl_q')||'';
+document.getElementById('saveQ').onclick=()=>{
+  localStorage.setItem('zl_q',myQ.value);
+  document.getElementById('qSaved').textContent='נשמר במכשיר שלכם ✓';
+  setTimeout(()=>document.getElementById('qSaved').textContent='',2500);
+};
+</script>
+</body>
+</html>
