@@ -174,8 +174,9 @@
   <h2 class="sec">כל המוקדים · מצפון לדרום <span class="pill" id="nsCount"></span></h2>
   <section class="panel full-table-wrap">
     <div class="hint">סדר גיאוגרפי לפי קו רוחב בישראל, מהמוקד הצפוני ביותר (נחל הבניאס) ועד אילת בדרום.</div>
+    <div class="hint" id="confirmLine" style="display:none"></div>
     <table>
-      <thead><tr><th class="num">#</th><th>מוקד הניקיון</th><th>אזור</th><th class="num">הרשמות</th><th class="num">משתתפים</th><th>נפח</th></tr></thead>
+      <thead><tr><th class="num">#</th><th>מוקד הניקיון</th><th>אזור</th><th class="num">הרשמות</th><th class="num">משתתפים</th><th class="num">אישרו הגעה</th><th class="num">ביטלו</th><th>נפח</th></tr></thead>
       <tbody id="nsBody"></tbody>
     </table>
   </section>
@@ -480,8 +481,61 @@ function render(){
     `<td class="region">${a.region}</td>`+
     `<td class="num">${heNum(a.reg)}</td>`+
     `<td class="num">${heNum(a.people)}</td>`+
+    confirmCells(a.site)+
     `<td class="barcell"><div class="bar" style="width:${Math.round(a.people/maxPeople*100)}%"></div></td></tr>`
   ).join("");
+}
+
+/* ---- אישורי הגעה ----
+   בניגוד להרשמות שנשאבות חי, אלה תוצאת הצלבה חד־פעמית מול רשימת מאשרי
+   ההגעה (מסרון 06-07/10). לכן מוצג כאן תאריך נכונות, ו"–" כשאין נתון. */
+let CONFIRM = null;
+function confirmCells(site){
+  if(!CONFIRM) return '<td class="num">–</td><td class="num">–</td>';
+  const c = CONFIRM.get(site);
+  if(!c) return '<td class="num">–</td><td class="num">–</td>';
+  const yes = c.yes ? `<b style="color:#0a8f6f">${heNum(c.yes)}</b>` : '0';
+  const no  = c.no  ? `<span style="color:#c0392b">${heNum(c.no)}</span>` : '0';
+  return `<td class="num">${yes}</td><td class="num">${no}</td>`;
+}
+async function loadConfirmations(){
+  try{
+    const res = await fetch('attendance_by_site.csv', {cache:'no-store'});
+    if(!res.ok) return;
+    const txt = (await res.text()).replace(/^﻿/,'');
+    const map = new Map();
+    let tot = {yes:0, no:0, free:0, none:0};
+    // הקובץ מגיע עם שמות המוקדים הגולמיים מהטופס. מפעילים עליהם את אותו
+    // canonicalSite של הדשבורד כדי שהווריאנטים יתאחדו בדיוק כמו בהרשמות,
+    // במקום לשכפל את טבלת המיפוי גם בצד הפייתון.
+    let orphan = null;   // נרשמים שאישרו הגעה אך אין להם מוקד כלל
+    parseCSV(txt).slice(1).forEach(f=>{
+      if(f.length < 7 || !f[0]) return;
+      const o = {yes:+f[3]||0, no:+f[4]||0, free:+f[5]||0, none:+f[6]||0,
+                 reg:+f[1]||0, ppl:+f[2]||0};
+      if(f[0].indexOf('ללא מוקד') !== -1){ orphan = o; return; }
+      const key = (canonicalSite(f[0]) || {name:f[0]}).name;
+      const cur = map.get(key) || {yes:0, no:0, free:0, none:0};
+      cur.yes+=o.yes; cur.no+=o.no; cur.free+=o.free; cur.none+=o.none;
+      map.set(key, cur);
+      tot.yes+=o.yes; tot.no+=o.no; tot.free+=o.free; tot.none+=o.none;
+    });
+    CONFIRM = map;
+    const el = document.getElementById('confirmLine');
+    if(el){
+      // הסכום כאן הוא בדיוק סכום העמודות בטבלה שמתחת, בלי ה"ללא מוקד".
+      let html = `אישורי הגעה (נכון ל־07/10): <b style="color:#0a8f6f">${heNum(tot.yes)}</b> משתתפים אישרו · `+
+                 `<b style="color:#c0392b">${heNum(tot.no)}</b> ביטלו · ${heNum(tot.none)} טרם השיבו`;
+      if(orphan && orphan.yes){
+        html += `<div style="margin-top:6px;color:#c0392b;font-weight:700">`+
+                `⚠ בנוסף: ${heNum(orphan.yes)} משתתפים (${heNum(orphan.reg)} הרשמות קבוצתיות) אישרו הגעה `+
+                `אך לא בחרו מוקד בטופס, ולכן אינם מופיעים בטבלה.</div>`;
+      }
+      el.innerHTML = html;
+      el.style.display = 'block';
+    }
+    render();
+  }catch(e){ /* הדשבורד ממשיך לעבוד גם בלי קובץ האישורים */ }
 }
 
 function drawPie(labels,data,colors){
@@ -533,6 +587,7 @@ function clearMsg(){document.getElementById("message").innerHTML="";}
 
 /* ============ INIT ============ */
 loadData();
+loadConfirmations();        // סטטי, נטען פעם אחת ולא ברענון האוטומטי
 setInterval(loadData, AUTO_REFRESH_MS);
 </script>
 </body>

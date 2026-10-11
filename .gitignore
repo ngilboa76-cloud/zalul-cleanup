@@ -4,3 +4,12 @@ _home.*
 exp.csv
 g0.csv
 *.tmp
+
+# PII: never publish. This repo is served on GitHub Pages.
+_confirm.xlsx
+_regs_full.xlsx
+_regs_full.csv
+_live_regs.csv
+_live_check.png
+attendance_unmatched.csv
+*_pii.*
