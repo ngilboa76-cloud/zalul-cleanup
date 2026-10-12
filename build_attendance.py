@@ -114,19 +114,22 @@ for ph, site, people in regs:
     else:
         matched.add(ph)
         s[{'מאשר': 'אישרו', 'מסרב': 'ביטלו', 'אחר': 'פנייה חופשית'}[st]] += people
+        if st == 'מאשר':
+            s['מאשרים'] += 1      # טפסים, לא משתתפים. ההפרש מול "אישרו" הוא הקבוצות.
 
 ordered = sorted(sites.items(), key=lambda kv: -kv[1]['נרשמו'])
 with open('attendance_by_site.csv', 'w', encoding='utf-8-sig', newline='') as f:
     w = csv.writer(f)
     w.writerow(['מוקד', 'טפסים', 'נרשמו', 'אישרו הגעה', 'ביטלו', 'פנייה חופשית',
-                'ללא מענה', 'צפי מינימום', 'צפי מקסימום', '% מענה'])
+                'ללא מענה', 'צפי מינימום', 'צפי מקסימום', '% מענה', 'הרשמות שאישרו'])
     for site, s in ordered:
         answered = s['אישרו'] + s['ביטלו'] + s['פנייה חופשית']
         w.writerow([site, s['טפסים'], s['נרשמו'], s['אישרו'], s['ביטלו'],
                     s['פנייה חופשית'], s['ללא מענה'],
                     s['אישרו'],                  # only people who explicitly said yes
                     s['נרשמו'] - s['ביטלו'],     # everyone who did not say no
-                    '%d%%' % round(100 * answered / s['נרשמו']) if s['נרשמו'] else '0%'])
+                    '%d%%' % round(100 * answered / s['נרשמו']) if s['נרשמו'] else '0%',
+                    s['מאשרים']])
 
 with open('attendance_unmatched.csv', 'w', encoding='utf-8-sig', newline='') as f:
     w = csv.writer(f)
