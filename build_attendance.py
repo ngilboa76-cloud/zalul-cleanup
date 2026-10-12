@@ -10,10 +10,11 @@ Outputs:
   attendance_unmatched.csv - local only: phones that replied but match no registration
 """
 import csv, collections
-from zalul_status import load_status, load_registrations
+from zalul_status import load_status, load_registrations, load_site_totals
 
 status, lastmsg, manual = load_status()
 regs, skipped = load_registrations()
+site_totals = load_site_totals()
 
 # ---------- join ----------
 sites = collections.defaultdict(collections.Counter)
@@ -35,15 +36,21 @@ ordered = sorted(sites.items(), key=lambda kv: -kv[1]['נרשמו'])
 with open('attendance_by_site.csv', 'w', encoding='utf-8-sig', newline='') as f:
     w = csv.writer(f)
     w.writerow(['מוקד', 'טפסים', 'נרשמו', 'אישרו הגעה', 'ביטלו', 'פנייה חופשית',
-                'ללא מענה', 'צפי מינימום', 'צפי מקסימום', '% מענה', 'הרשמות שאישרו'])
+                'ללא מענה', 'צפי מינימום', 'צפי מקסימום', '% מענה', 'הרשמות שאישרו',
+                'צפי מהשטח'])
     for site, s in ordered:
         answered = s['אישרו'] + s['ביטלו'] + s['פנייה חופשית']
-        w.writerow([site, s['טפסים'], s['נרשמו'], s['אישרו'], s['ביטלו'],
+        override = site_totals.get(site)
+        # צפי מהשטח גובר על סכום האישורים, ויכול להיות גבוה מהרשומים
+        yes = override[0] if override else s['אישרו']
+        mx = max(yes, s['נרשמו'] - s['ביטלו'])
+        w.writerow([site, s['טפסים'], s['נרשמו'], yes, s['ביטלו'],
                     s['פנייה חופשית'], s['ללא מענה'],
-                    s['אישרו'],                  # only people who explicitly said yes
-                    s['נרשמו'] - s['ביטלו'],     # everyone who did not say no
+                    yes,                         # צפי מינימום
+                    mx,                          # צפי מקסימום
                     '%d%%' % round(100 * answered / s['נרשמו']) if s['נרשמו'] else '0%',
-                    s['מאשרים']])
+                    s['מאשרים'],
+                    override[0] if override else ''])
 
 with open('attendance_unmatched.csv', 'w', encoding='utf-8-sig', newline='') as f:
     w = csv.writer(f)
@@ -54,8 +61,11 @@ with open('attendance_unmatched.csv', 'w', encoding='utf-8-sig', newline='') as 
 
 # ---------- summary ----------
 t = collections.Counter()
-for _, s in ordered:
+for site, s in ordered:
     t.update(s)
+    ov = site_totals.get(site)
+    if ov:                                   # הצפי מהשטח מחליף את סכום האישורים
+        t['אישרו'] += ov[0] - s['אישרו']
 print('הרשמות: %d טפסים (%d שורות בדיקה הוסרו) | %d משתתפים | %d מוקדים'
       % (len(regs), skipped, t['נרשמו'], len(ordered)))
 print('השיבו: %d אנשים (%d%% מהנרשמים)%s'

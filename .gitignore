@@ -18,3 +18,4 @@ attendance_unmatched.csv
 callsheets_pii/
 manual_confirms.csv
 __pycache__/
+manual_site_totals.csv

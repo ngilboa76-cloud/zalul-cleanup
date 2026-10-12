@@ -11,7 +11,8 @@ import openpyxl
 CONFIRM_CSV = '_confirm.csv'        # UTF-16, tab separated (newer export)
 CONFIRM_XLSX = '_confirm.xlsx'      # older export format
 REGS = '_regs_full.xlsx'
-OVERRIDES = 'manual_confirms.csv'   # אישורים שהגיעו בטלפון ולא דרך המסרון
+OVERRIDES = 'manual_confirms.csv'       # אישורים שהגיעו בטלפון ולא דרך המסרון
+SITE_TOTALS = 'manual_site_totals.csv'  # צפי מגיעים שנקבע ברמת המוקד
 
 CONFIRM = {'מאשר/ת הגעה', 'מאשרת הגעה', 'מאשר הגעה'}
 DECLINE = {'לא אוכל להגיע'}
@@ -91,6 +92,26 @@ def load_status():
                 if note:
                     lastmsg[ph] = note
     return status, lastmsg, manual
+
+
+def load_site_totals():
+    """site -> (expected_people, note). A figure set from the field for the whole
+    site, which can legitimately exceed the registered headcount: groups grow and
+    people turn up without registering. Overrides the computed confirmation sum
+    for that site only."""
+    out = {}
+    if not os.path.exists(SITE_TOTALS):
+        return out
+    with open(SITE_TOTALS, encoding='utf-8-sig', newline='') as f:
+        for row in csv.DictReader(f):
+            site = (row.get('מוקד') or '').strip()
+            try:
+                n = int(re.sub(r'\D', '', str(row.get('צפי מגיעים') or '')))
+            except ValueError:
+                continue
+            if site:
+                out[site] = (n, (row.get('הערה') or '').strip())
+    return out
 
 
 def load_registrations():

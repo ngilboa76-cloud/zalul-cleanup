@@ -13,11 +13,13 @@ import os, collections
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
-from zalul_status import load_status, load_registrations, reg_date, BLAST
+from zalul_status import (load_status, load_registrations, load_site_totals,
+                          reg_date, BLAST)
 
 OUTDIR = 'callsheets_pii'
 
 status, lastmsg, manual = load_status()
+site_totals = load_site_totals()
 
 
 def status_of(x):
@@ -42,7 +44,9 @@ for x in load_registrations()[0]:
     if status.get(x['phone']) == 'מאשר':
         s['yes'] += x['people']
 
-order = sorted(((k, v) for k, v in by_site.items() if v['yes'] == 0),
+# מוקד עם צפי מהשטח כבר לא "ללא אישורים", גם אם אף אחד לא השיב למסרון
+order = sorted(((k, v) for k, v in by_site.items()
+                if v['yes'] == 0 and not site_totals.get(k)),
                key=lambda kv: -kv[1]['ppl'])
 
 # ---- styling ----

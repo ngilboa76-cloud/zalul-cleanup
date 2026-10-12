@@ -502,7 +502,10 @@ function confirmCells(site){
   if(!CONFIRM) return '<td class="num">–</td><td class="num">–</td>';
   const c = CONFIRM.get(site);
   if(!c) return '<td class="num">–</td><td class="num">–</td>';
-  const yes = c.yes ? `<b style="color:#0a8f6f">${heNum(c.yes)}</b>` : '0';
+  // כוכבית = צפי שנקבע מהשטח ולא סכום אישורים, ולכן הוא יכול לעלות על הרשומים
+  const star = c.field
+    ? ' <span style="color:var(--warn)" title="צפי שנקבע מהשטח, לא סכום אישורים">✱</span>' : '';
+  const yes = c.yes ? `<b style="color:#0a8f6f">${heNum(c.yes)}</b>${star}` : '0' + star;
   const no  = c.no  ? `<span style="color:#c0392b">${heNum(c.no)}</span>` : '0';
   return `<td class="num">${yes}</td><td class="num">${no}</td>`;
 }
@@ -520,21 +523,29 @@ async function loadConfirmations(){
     parseCSV(txt).slice(1).forEach(f=>{
       if(f.length < 7 || !f[0]) return;
       const o = {yes:+f[3]||0, no:+f[4]||0, free:+f[5]||0, none:+f[6]||0,
-                 reg:+f[1]||0, ppl:+f[2]||0, yesReg:+f[10]||0};
+                 reg:+f[1]||0, ppl:+f[2]||0, yesReg:+f[10]||0,
+                 field:(f[11]||'').trim()!=='' };   // צפי שנקבע מהשטח
       if(f[0].indexOf('ללא מוקד') !== -1){ orphan = o; return; }
       const key = (canonicalSite(f[0]) || {name:f[0]}).name;
-      const cur = map.get(key) || {yes:0, no:0, free:0, none:0};
+      const cur = map.get(key) || {yes:0, no:0, free:0, none:0, field:false};
       cur.yes+=o.yes; cur.no+=o.no; cur.free+=o.free; cur.none+=o.none;
+      cur.field = cur.field || o.field;
       map.set(key, cur);
       tot.yes+=o.yes; tot.no+=o.no; tot.free+=o.free; tot.none+=o.none;
       tot.yesReg+=o.yesReg;
     });
     CONFIRM = map;
+    const fieldSites = [...map.entries()].filter(([,v])=>v.field).map(([k])=>k);
     const el = document.getElementById('confirmLine');
     if(el){
       // הסכום כאן הוא בדיוק סכום העמודות בטבלה שמתחת, בלי ה"ללא מוקד".
       let html = `אישורי הגעה (נכון ל־12/10): <b style="color:#0a8f6f">${heNum(tot.yes)}</b> משתתפים אישרו · `+
                  `<b style="color:#c0392b">${heNum(tot.no)}</b> ביטלו · ${heNum(tot.none)} טרם השיבו`;
+      if(fieldSites.length){
+        html += `<div style="margin-top:6px;color:var(--warn);font-weight:700">`+
+                `✱ ${fieldSites.join(', ')}: הצפי נקבע מהשטח ולא מסכום האישורים, `+
+                `ולכן הוא יכול לעלות על מספר הרשומים.</div>`;
+      }
       if(orphan && orphan.yes){
         html += `<div style="margin-top:6px;color:#c0392b;font-weight:700">`+
                 `⚠ בנוסף: ${heNum(orphan.yes)} משתתפים (${heNum(orphan.reg)} הרשמות קבוצתיות) אישרו הגעה `+
@@ -550,8 +561,10 @@ async function loadConfirmations(){
     const allYesReg = tot.yesReg + (orphan ? orphan.yesReg : 0);
     const cy = document.getElementById('cYes'), cn = document.getElementById('cNo');
     if(cy){
-      cy.innerHTML = heNum(allYes) +
-        ` <small>משתתפים · מ־${heNum(allYesReg)} הרשמות</small>`;
+      // כשיש צפי מהשטח הוא לא נובע מטופס, ולכן אי אפשר לתלות את כל המספר בהרשמות
+      const src = fieldSites.length ? `מ־${heNum(allYesReg)} הרשמות + צפי מהשטח`
+                                    : `מ־${heNum(allYesReg)} הרשמות`;
+      cy.innerHTML = heNum(allYes) + ` <small>משתתפים · ${src}</small>`;
       document.getElementById('cardYes').style.display = '';
     }
     if(cn){ cn.innerHTML = heNum(tot.no) + ' <small>משתתפים</small>';
