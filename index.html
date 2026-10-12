@@ -129,6 +129,12 @@
     <div class="card"><div class="k">סה״כ משתתפים</div><div class="v" id="cPeople">–</div></div>
     <div class="card"><div class="k">חופים / מוקדים פעילים</div><div class="v" id="cSites">–</div></div>
     <div class="card"><div class="k">קבוצות וארגונים</div><div class="v" id="cGroups">–</div></div>
+    <div class="card" id="cardYes" style="display:none;border-color:#9ed8c2;background:#f2fbf7">
+      <div class="k">אישרו הגעה <span style="font-weight:600;opacity:.75">· נכון ל־07/10</span></div>
+      <div class="v" id="cYes" style="color:#0a8f6f">–</div></div>
+    <div class="card" id="cardNo" style="display:none;border-color:#f0c2ba;background:#fef6f4">
+      <div class="k">ביטלו הגעה <span style="font-weight:600;opacity:.75">· נכון ל־07/10</span></div>
+      <div class="v" id="cNo" style="color:#c0392b">–</div></div>
   </div>
 
   <div class="filter">
@@ -534,6 +540,11 @@ async function loadConfirmations(){
       el.innerHTML = html;
       el.style.display = 'block';
     }
+    // גם בכרטיסים העליונים, כדי שלא צריך לגלול עד הטבלה כדי לראות את זה
+    const allYes = tot.yes + (orphan ? orphan.yes : 0);
+    const cy = document.getElementById('cYes'), cn = document.getElementById('cNo');
+    if(cy){ cy.textContent = heNum(allYes); document.getElementById('cardYes').style.display = ''; }
+    if(cn){ cn.textContent = heNum(tot.no);  document.getElementById('cardNo').style.display  = ''; }
     render();
   }catch(e){ /* הדשבורד ממשיך לעבוד גם בלי קובץ האישורים */ }
 }
