@@ -130,10 +130,10 @@
     <div class="card"><div class="k">חופים / מוקדים פעילים</div><div class="v" id="cSites">–</div></div>
     <div class="card"><div class="k">קבוצות וארגונים</div><div class="v" id="cGroups">–</div></div>
     <div class="card" id="cardYes" style="display:none;border-color:#9ed8c2;background:#f2fbf7">
-      <div class="k">אישרו הגעה <span style="font-weight:600;opacity:.75">· נכון ל־07/10</span></div>
+      <div class="k">אישרו הגעה <span style="font-weight:600;opacity:.75">· נכון ל־12/10</span></div>
       <div class="v" id="cYes" style="color:#0a8f6f">–</div></div>
     <div class="card" id="cardNo" style="display:none;border-color:#f0c2ba;background:#fef6f4">
-      <div class="k">ביטלו הגעה <span style="font-weight:600;opacity:.75">· נכון ל־07/10</span></div>
+      <div class="k">ביטלו הגעה <span style="font-weight:600;opacity:.75">· נכון ל־12/10</span></div>
       <div class="v" id="cNo" style="color:#c0392b">–</div></div>
   </div>
 
@@ -494,7 +494,7 @@ function render(){
 
 /* ---- אישורי הגעה ----
    בניגוד להרשמות שנשאבות חי, אלה תוצאת הצלבה חד־פעמית מול רשימת מאשרי
-   ההגעה (מסרון 06-07/10). לכן מוצג כאן תאריך נכונות, ו"–" כשאין נתון. */
+   ההגעה. עדכון אחרון: ייצוא 12/10. לכן מוצג תאריך נכונות, ו"–" כשאין נתון. */
 let CONFIRM = null;
 function confirmCells(site){
   if(!CONFIRM) return '<td class="num">–</td><td class="num">–</td>';
@@ -530,7 +530,7 @@ async function loadConfirmations(){
     const el = document.getElementById('confirmLine');
     if(el){
       // הסכום כאן הוא בדיוק סכום העמודות בטבלה שמתחת, בלי ה"ללא מוקד".
-      let html = `אישורי הגעה (נכון ל־07/10): <b style="color:#0a8f6f">${heNum(tot.yes)}</b> משתתפים אישרו · `+
+      let html = `אישורי הגעה (נכון ל־12/10): <b style="color:#0a8f6f">${heNum(tot.yes)}</b> משתתפים אישרו · `+
                  `<b style="color:#c0392b">${heNum(tot.no)}</b> ביטלו · ${heNum(tot.none)} טרם השיבו`;
       if(orphan && orphan.yes){
         html += `<div style="margin-top:6px;color:#c0392b;font-weight:700">`+

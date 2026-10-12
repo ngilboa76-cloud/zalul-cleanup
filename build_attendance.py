@@ -15,9 +15,11 @@ Outputs:
   attendance_by_site.csv   - PII-free site aggregate, safe to publish
   attendance_unmatched.csv - local only: phones that replied but match no registration
 """
-import csv, re, collections
+import csv, os, re, collections
 import openpyxl
 
+CONFIRM_CSV = '_confirm.csv'      # UTF-16, tab separated (newer export)
+CONFIRM_XLSX = '_confirm.xlsx'    # older export format
 CONFIRM = {'מאשר/ת הגעה', 'מאשרת הגעה', 'מאשר הגעה'}
 DECLINE = {'לא אוכל להגיע'}
 TEST_MARKERS = ('בדיקה', 'eddr666')
@@ -66,14 +68,27 @@ for ph, site, people in regs_raw:
 regs = [(ph, site, people) for (ph, site), people in dedup.items()]
 
 # ---------- side B: confirmations ----------
-wb2 = openpyxl.load_workbook('_confirm.xlsx', read_only=True, data_only=True)
+def confirm_rows():
+    """The platform exports either .xlsx or a UTF-16 TAB-separated .csv whose
+    message field may contain newlines. Prefer the .csv when present, it is the
+    newer export format. Yields (phone, when, message)."""
+    if os.path.exists(CONFIRM_CSV):
+        with open(CONFIRM_CSV, encoding='utf-16', newline='') as f:
+            for r in list(csv.reader(f, delimiter='\t'))[1:]:
+                if r and r[0].strip():
+                    yield r[0], (r[5] if len(r) > 5 else ''), (r[4] if len(r) > 4 else '')
+    else:
+        wb2 = openpyxl.load_workbook(CONFIRM_XLSX, read_only=True, data_only=True)
+        for r in list(wb2[wb2.sheetnames[0]].iter_rows(values_only=True))[1:]:
+            if r and r[0]:
+                yield r[0], r[5], (r[4] or '')
+
+
 events = collections.defaultdict(list)
-for r in list(wb2[wb2.sheetnames[0]].iter_rows(values_only=True))[1:]:
-    if not r or not r[0]:
-        continue
-    msg = (r[4] or '').strip()
+for phone, when, msg in confirm_rows():
+    msg = str(msg or '').strip()
     kind = 'מאשר' if msg in CONFIRM else 'מסרב' if msg in DECLINE else 'אחר'
-    events[norm_phone(r[0])].append((r[5], kind, msg))
+    events[norm_phone(phone)].append((str(when), kind, msg))
 
 # a person may write several times; the latest DECISIVE answer wins
 status, freetext = {}, {}
