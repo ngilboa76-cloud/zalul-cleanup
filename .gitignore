@@ -14,3 +14,7 @@ _live_regs.csv
 _live_check.png
 attendance_unmatched.csv
 *_pii.*
+
+callsheets_pii/
+manual_confirms.csv
+__pycache__/

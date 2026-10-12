@@ -1,129 +1,163 @@
 # -*- coding: utf-8 -*-
-"""Call sheets for the sites with zero confirmations.
+"""Call sheets for the sites with zero confirmations, one file per site.
 
-Takes every registrant at a zero-confirmation site and lists who to phone,
-with their status (never replied / declined) and headcount, biggest groups
-first so the highest-impact calls happen before the small ones.
+Writes a separate .xlsx per site into callsheets_pii/, plus a summary file.
+xlsx rather than csv so the leading zero of a phone number survives: Excel
+silently eats it when opening a csv.
 
-Outputs (both PII, both gitignored):
-  callsheet_pii.csv  - one row per registrant, opens in Excel
-  callsheet_pii.txt  - per-site plain text, phone numbers ready to copy
+Status is three-way, not two-way. The SMS went out on 06/10, so anyone who
+registered after that was never on the send list. Calling them is a first
+ask, not a chase, and the script labels them accordingly.
 """
-import csv, os, re, collections
-import openpyxl
+import os, collections
+from openpyxl import Workbook
+from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+from openpyxl.utils import get_column_letter
+from zalul_status import load_status, load_registrations, reg_date, BLAST
 
-CONFIRM_CSV, CONFIRM_XLSX, REGS = '_confirm.csv', '_confirm.xlsx', '_regs_full.xlsx'
-CONFIRM = {'מאשר/ת הגעה', 'מאשרת הגעה', 'מאשר הגעה'}
-DECLINE = {'לא אוכל להגיע'}
+OUTDIR = 'callsheets_pii'
 
-
-def norm_phone(s):
-    d = re.sub(r'\D', '', str(s or ''))
-    if d.startswith('972'):
-        d = '0' + d[3:]
-    elif d and not d.startswith('0'):
-        d = '0' + d
-    return d
+status, lastmsg, manual = load_status()
 
 
-def people_of(v):
-    if isinstance(v, bool) or v is None or v == '':
-        return 1
-    if isinstance(v, (int, float)):
-        return max(1, int(round(v)))
-    return int(re.sub(r'\D', '', str(v)) or 1)
+def status_of(x):
+    st = status.get(x['phone'])
+    if st == 'מסרב':
+        return 'ביטל/ה'
+    if st == 'מאשר':
+        return 'אישר/ה בטלפון' if x['phone'] in manual else 'אישר/ה'
+    if st == 'אחר':
+        return 'שלח/ה הודעה חופשית'
+    d = reg_date(x['date'])
+    if d and d >= BLAST:
+        return 'נרשם/ה אחרי המסרון'          # מעולם לא נשאל/ה
+    return 'לא השיב/ה כלל'
 
 
-# ---- confirmation status per phone ----
-def confirm_rows():
-    if os.path.exists(CONFIRM_CSV):
-        with open(CONFIRM_CSV, encoding='utf-16', newline='') as f:
-            for r in list(csv.reader(f, delimiter='\t'))[1:]:
-                if r and r[0].strip():
-                    yield r[0], (r[5] if len(r) > 5 else ''), (r[4] if len(r) > 4 else '')
-    else:
-        wb = openpyxl.load_workbook(CONFIRM_XLSX, read_only=True, data_only=True)
-        for r in list(wb[wb.sheetnames[0]].iter_rows(values_only=True))[1:]:
-            if r and r[0]:
-                yield r[0], r[5], (r[4] or '')
-
-
-events = collections.defaultdict(list)
-for phone, when, msg in confirm_rows():
-    msg = str(msg or '').strip()
-    kind = 'מאשר' if msg in CONFIRM else 'מסרב' if msg in DECLINE else 'אחר'
-    events[norm_phone(phone)].append((str(when), kind, msg))
-
-status, lastmsg = {}, {}
-for ph, evs in events.items():
-    evs.sort(key=lambda e: e[0])
-    decisive = [e for e in evs if e[1] != 'אחר']
-    status[ph] = decisive[-1][1] if decisive else 'אחר'
-    lastmsg[ph] = evs[-1][2]
-
-# ---- registrations ----
-wb = openpyxl.load_workbook(REGS, read_only=True, data_only=True)
-regs = []
-for r in list(wb['all'].iter_rows(values_only=True))[1:]:
-    if not r or not r[0]:
-        continue
-    site = (r[4] or r[1] or '').strip() or 'ללא מוקד משויך'
-    regs.append({'date': r[0], 'site': site, 'name': r[5] or '', 'email': r[6] or '',
-                 'phone': norm_phone(r[7]), 'org': r[8] or '',
-                 'people': people_of(r[9]), 'type': r[10] or ''})
-
-# ---- which sites have zero confirmations ----
 by_site = collections.defaultdict(lambda: {'yes': 0, 'ppl': 0, 'rows': []})
-seen = set()
-for x in regs:
-    key = (x['phone'], x['site'])
-    if key in seen:                       # same dedup rule as the dashboard
-        continue
-    seen.add(key)
+for x in load_registrations()[0]:
     s = by_site[x['site']]
     s['ppl'] += x['people']
     s['rows'].append(x)
     if status.get(x['phone']) == 'מאשר':
         s['yes'] += x['people']
 
-zero = {k: v for k, v in by_site.items() if v['yes'] == 0}
-order = sorted(zero.items(), key=lambda kv: -kv[1]['ppl'])
+order = sorted(((k, v) for k, v in by_site.items() if v['yes'] == 0),
+               key=lambda kv: -kv[1]['ppl'])
 
-STATUS_HE = {None: 'לא השיב/ה כלל', 'מסרב': 'ביטל/ה', 'אחר': 'שלח/ה הודעה חופשית'}
+# ---- styling ----
+HEAD_FILL = PatternFill('solid', fgColor='0871B9')
+HEAD_FONT = Font(bold=True, color='FFFFFF', size=11, name='Assistant')
+TITLE = Font(bold=True, size=15, color='055A95', name='Assistant')
+SUB = Font(size=10, color='5B6B78', name='Assistant')
+BODY = Font(size=11, name='Assistant')
+GREY = Font(size=11, name='Assistant', color='999999', italic=True)
+GROUP_FILL = PatternFill('solid', fgColor='FFF4E0')     # קבוצות, שיחה אחת = הרבה אנשים
+NEW_FILL = PatternFill('solid', fgColor='EAF4FB')       # נרשמו אחרי המסרון
+THIN = Border(bottom=Side('thin', color='DDE6ED'))
+COLS = [('שם', 26), ('טלפון', 14), ('משתתפים', 11), ('סוג', 15),
+        ('ארגון', 18), ('מייל', 30), ('תאריך הרשמה', 17), ('סטטוס', 22)]
+BAD = r':\/?*[]"<>|'
 
-with open('callsheet_pii.csv', 'w', encoding='utf-8-sig', newline='') as f:
-    w = csv.writer(f)
-    w.writerow(['מוקד', 'סך משתתפים במוקד', 'שם', 'טלפון', 'מייל', 'משתתפים',
-                'סוג', 'ארגון', 'תאריך הרשמה', 'סטטוס', 'הודעה אחרונה'])
-    for site, s in order:
-        for x in sorted(s['rows'], key=lambda x: -x['people']):
-            st = status.get(x['phone'])
-            w.writerow([site, s['ppl'], x['name'], x['phone'], x['email'], x['people'],
-                        x['type'], x['org'], x['date'],
-                        STATUS_HE.get(st, st), lastmsg.get(x['phone'], '')])
 
-with open('callsheet_pii.txt', 'w', encoding='utf-8') as f:
-    f.write('רשימות טלפונים · מוקדים ללא אף אישור הגעה\n')
-    f.write('נכון לייצוא 12/10/2026\n\n')
-    for site, s in order:
-        f.write('=' * 70 + '\n')
-        f.write('%s  ·  %d משתתפים רשומים  ·  %d הרשמות\n'
-                % (site, s['ppl'], len(s['rows'])))
-        f.write('=' * 70 + '\n')
-        for x in sorted(s['rows'], key=lambda x: -x['people']):
-            st = STATUS_HE.get(status.get(x['phone']), status.get(x['phone']))
-            tag = '  [%s]' % x['org'] if x['org'] else ''
-            f.write('  %-11s  %-26s %3d משתתפים   %s%s\n'
-                    % (x['phone'], x['name'][:26], x['people'], st, tag))
-        f.write('\n  כל הטלפונים להעתקה:\n  ')
-        f.write(', '.join(x['phone'] for x in sorted(s['rows'], key=lambda x: -x['people'])))
-        f.write('\n\n')
+def safe_name(raw):
+    n = ''.join('-' if c in BAD else c for c in raw).strip().rstrip('.')
+    return (n[:70] or 'מוקד')
 
-tot_people = sum(s['ppl'] for _, s in order)
-tot_rows = sum(len(s['rows']) for _, s in order)
-print('מוקדים ללא אף אישור: %d  |  %d הרשמות  |  %d משתתפים'
-      % (len(order), tot_rows, tot_people))
-for site, s in order:
-    never = sum(1 for x in s['rows'] if x['phone'] not in status)
-    print('   %-40s %4d משתתפים · %2d הרשמות · %d לא השיבו כלל'
-          % (site[:40], s['ppl'], len(s['rows']), never))
+
+os.makedirs(OUTDIR, exist_ok=True)
+for old in os.listdir(OUTDIR):
+    if old.endswith('.xlsx'):
+        os.remove(os.path.join(OUTDIR, old))
+
+written = []
+for rank, (site, s) in enumerate(order, start=1):
+    rows = sorted(s['rows'], key=lambda x: -x['people'])
+    never = sum(1 for x in rows if status_of(x) == 'לא השיב/ה כלל')
+    newreg = sum(1 for x in rows if status_of(x) == 'נרשם/ה אחרי המסרון')
+    declined = sum(1 for x in rows if status_of(x) == 'ביטל/ה')
+
+    wbx = Workbook()
+    ws = wbx.active
+    ws.title = 'רשימת טלפונים'
+    ws.sheet_view.rightToLeft = True
+    ws['A1'] = site
+    ws['A1'].font = TITLE
+    ws['A2'] = ('%d משתתפים רשומים · %d הרשמות · אף אחד לא אישר הגעה' % (s['ppl'], len(rows)))
+    ws['A2'].font = SUB
+    ws['A3'] = ('%d לא השיבו למסרון · %d נרשמו אחרי שהמסרון יצא · %d ביטלו · נכון ל־12/10/2026'
+                % (never, newreg, declined))
+    ws['A3'].font = SUB
+
+    for c, (h, w) in enumerate(COLS, start=1):
+        cell = ws.cell(row=5, column=c, value=h)
+        cell.fill, cell.font = HEAD_FILL, HEAD_FONT
+        cell.alignment = Alignment(horizontal='center')
+        ws.column_dimensions[get_column_letter(c)].width = w
+    ws.freeze_panes = 'A6'
+
+    for i, x in enumerate(rows, start=6):
+        st = status_of(x)
+        for c, v in enumerate([x['name'], x['phone'], x['people'], x['type'],
+                               x['org'], x['email'], x['date'], st], start=1):
+            cell = ws.cell(row=i, column=c, value=v)
+            cell.font = GREY if st == 'ביטל/ה' else BODY
+            cell.border = THIN
+            if c == 2:
+                cell.number_format = '@'                 # keep the leading zero
+                cell.alignment = Alignment(horizontal='left')
+            elif c == 3:
+                cell.alignment = Alignment(horizontal='center')
+        if st != 'ביטל/ה':
+            fill = GROUP_FILL if 'קבוצה' in (x['type'] or '') else (
+                NEW_FILL if st == 'נרשם/ה אחרי המסרון' else None)
+            if fill:
+                for c in range(1, len(COLS) + 1):
+                    ws.cell(row=i, column=c).fill = fill
+
+    last = 5 + len(rows)
+    ws.auto_filter.ref = 'A5:%s%d' % (get_column_letter(len(COLS)), last)
+    ws.cell(row=last + 2, column=1, value='כל הטלפונים להעתקה (ללא מי שביטל):').font = \
+        Font(bold=True, size=10, name='Assistant')
+    ws.cell(row=last + 3, column=1,
+            value=', '.join(x['phone'] for x in rows if status_of(x) != 'ביטל/ה')).font = \
+        Font(size=10, name='Assistant')
+    ws.cell(row=last + 5, column=1, value='רקע כתום = קבוצה או ארגון · רקע תכלת = נרשם אחרי שהמסרון יצא').font = SUB
+
+    fname = '%02d - %s (%d משתתפים).xlsx' % (rank, safe_name(site), s['ppl'])
+    wbx.save(os.path.join(OUTDIR, fname))
+    written.append((fname, site, s['ppl'], len(rows), never, newreg, declined))
+
+# ---- summary file ----
+wbs = Workbook()
+ws = wbs.active
+ws.title = 'סיכום'
+ws.sheet_view.rightToLeft = True
+ws['A1'] = 'מוקדים ללא אף אישור הגעה'
+ws['A1'].font = TITLE
+ws['A2'] = 'קובץ נפרד לכל מוקד · נכון לייצוא 12/10/2026'
+ws['A2'].font = SUB
+for c, (h, w) in enumerate([('#', 5), ('מוקד', 40), ('משתתפים', 11), ('הרשמות', 10),
+                            ('לא השיבו', 11), ('נרשמו אחרי המסרון', 18),
+                            ('ביטלו', 9), ('שם הקובץ', 52)], start=1):
+    cell = ws.cell(row=4, column=c, value=h)
+    cell.fill, cell.font = HEAD_FILL, HEAD_FONT
+    cell.alignment = Alignment(horizontal='center')
+    ws.column_dimensions[get_column_letter(c)].width = w
+ws.freeze_panes = 'A5'
+for i, (fname, site, ppl, nrows, never, newreg, declined) in enumerate(written, start=5):
+    for c, v in enumerate([i - 4, site, ppl, nrows, never, newreg, declined, fname], start=1):
+        cell = ws.cell(row=i, column=c, value=v)
+        cell.font, cell.border = BODY, THIN
+        if c not in (2, 8):
+            cell.alignment = Alignment(horizontal='center')
+wbs.save(os.path.join(OUTDIR, '00 - סיכום.xlsx'))
+
+print('נכתבו %d קבצים לתיקייה %s\\' % (len(written) + 1, OUTDIR))
+print('%-42s %5s %5s %6s %6s' % ('מוקד', 'משת׳', 'הרש׳', 'לא ענו', 'חדשים'))
+print('-' * 70)
+for fname, site, ppl, nrows, never, newreg, declined in written:
+    print('%-42s %5d %5d %6d %6d' % (site[:42], ppl, nrows, never, newreg))
+print('-' * 70)
+print('%-42s %5d %5d %6d %6d' % ('סה״כ', sum(w[2] for w in written), sum(w[3] for w in written),
+                                 sum(w[4] for w in written), sum(w[5] for w in written)))

@@ -359,7 +359,7 @@ function process(rows){
     !header.some(h=>h.indexOf("מייל")>-1||h.indexOf("טלפון")>-1||h.indexOf("שם")>-1);
   // FILTER-based feed has no header row; start at 0 if the first cell is already a date
   const startRow = parseRegDate(header[0]) ? 0 : 1;
-  const out=[]; const seen=new Set(); const unmapped=new Set();
+  const out=[]; const seen=new Map(); const unmapped=new Set();
   for(let r=startRow;r<rows.length;r++){
     const c=rows[r]; if(!c) continue;
     let rawSite,date,ppl,type,dedupTok;
@@ -383,10 +383,12 @@ function process(rows){
     if(!site) continue;
     if(site._unmapped) unmapped.add((rawSite||"").trim());
     const id=dedupTok+"|"+site.name;
-    if(seen.has(id)) continue;
-    seen.add(id);
-    out.push({site:site.name, lat:site.lat, region:site.region,
-              date:date, people:ppl, type:type});
+    // הרשמה חוזרת של אותו נרשם לאותו מוקד היא תיקון, לא כפילות, ולכן
+    // האחרונה גוברת. נרשמת אחת הקטינה כך קבוצה מ-10 ל-5.
+    const rec={site:site.name, lat:site.lat, region:site.region,
+               date:date, people:ppl, type:type};
+    if(seen.has(id)) out[seen.get(id)]=rec;
+    else { seen.set(id, out.length); out.push(rec); }
   }
   RECORDS=out;
   if(unmapped.size) console.warn("אתרים שלא מופו גיאוגרפית:", [...unmapped]);
