@@ -9,8 +9,9 @@ Outputs:
   attendance_by_site.csv   - PII-free site aggregate, safe to publish
   attendance_unmatched.csv - local only: phones that replied but match no registration
 """
-import csv, collections
-from zalul_status import load_status, load_registrations, load_site_totals
+import csv, json, collections
+from zalul_status import (load_status, load_registrations, load_site_totals,
+                          confirm_asof)
 
 status, lastmsg, manual = load_status()
 regs, skipped = load_registrations()
@@ -58,6 +59,9 @@ with open('attendance_unmatched.csv', 'w', encoding='utf-8-sig', newline='') as 
     for ph, st in sorted(status.items()):
         if ph not in matched:
             w.writerow([ph, st, lastmsg.get(ph, '')])
+
+with open('attendance_meta.json', 'w', encoding='utf-8') as f:
+    json.dump({'asOf': confirm_asof()}, f, ensure_ascii=False)
 
 # ---------- summary ----------
 t = collections.Counter()

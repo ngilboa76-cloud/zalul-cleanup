@@ -62,6 +62,19 @@ def _confirm_rows():
                 yield r[0], r[5], (r[4] or '')
 
 
+def confirm_asof():
+    """Date of the newest message in the confirmation export, as DD/MM. This is
+    the real as-of date of the confirmation figures, so the dashboard reads it
+    from the data instead of carrying a hardcoded date that goes stale."""
+    newest = ''
+    for _, when, _ in _confirm_rows():
+        s = str(when or '')
+        if s > newest:
+            newest = s
+    m = re.match(r'(\d{4})-(\d{2})-(\d{2})', newest)
+    return '%s/%s' % (m[3], m[2]) if m else ''
+
+
 def load_status():
     """phone -> 'מאשר' | 'מסרב' | 'אחר'. Latest decisive message wins; a manual
     override in manual_confirms.csv beats anything from the SMS export, because

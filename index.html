@@ -130,10 +130,10 @@
     <div class="card"><div class="k">חופים / מוקדים פעילים</div><div class="v" id="cSites">–</div></div>
     <div class="card"><div class="k">קבוצות וארגונים</div><div class="v" id="cGroups">–</div></div>
     <div class="card" id="cardYes" style="display:none;border-color:#9ed8c2;background:#f2fbf7">
-      <div class="k">אישרו הגעה <span style="font-weight:600;opacity:.75">· נכון ל־12/10</span></div>
+      <div class="k">אישרו הגעה <span style="font-weight:600;opacity:.75" class="asof"></span></div>
       <div class="v" id="cYes" style="color:#0a8f6f">–</div></div>
     <div class="card" id="cardNo" style="display:none;border-color:#f0c2ba;background:#fef6f4">
-      <div class="k">ביטלו הגעה <span style="font-weight:600;opacity:.75">· נכון ל־12/10</span></div>
+      <div class="k">ביטלו הגעה <span style="font-weight:600;opacity:.75" class="asof"></span></div>
       <div class="v" id="cNo" style="color:#c0392b">–</div></div>
   </div>
 
@@ -496,8 +496,9 @@ function render(){
 
 /* ---- אישורי הגעה ----
    בניגוד להרשמות שנשאבות חי, אלה תוצאת הצלבה חד־פעמית מול רשימת מאשרי
-   ההגעה. עדכון אחרון: ייצוא 12/10. לכן מוצג תאריך נכונות, ו"–" כשאין נתון. */
-let CONFIRM = null;
+   ההגעה. תאריך הנכונות נגזר מהנתון החדש ביותר בייצוא (attendance_meta.json)
+   ולא מוקלד כאן, כדי שלא יישאר מאחור בריענון הבא. "–" = אין נתון. */
+let CONFIRM = null, ASOF = '';
 function confirmCells(site){
   if(!CONFIRM) return '<td class="num">–</td><td class="num">–</td>';
   const c = CONFIRM.get(site);
@@ -511,6 +512,13 @@ function confirmCells(site){
 }
 async function loadConfirmations(){
   try{
+    try{
+      const m = await fetch('attendance_meta.json', {cache:'no-store'});
+      if(m.ok) ASOF = (await m.json()).asOf || '';
+    }catch(e){ /* בלי תאריך פשוט לא נציג אותו */ }
+    document.querySelectorAll('.asof').forEach(
+      el => el.textContent = ASOF ? '· נכון ל־' + ASOF : '');
+
     const res = await fetch('attendance_by_site.csv', {cache:'no-store'});
     if(!res.ok) return;
     const txt = (await res.text()).replace(/^﻿/,'');
@@ -539,7 +547,7 @@ async function loadConfirmations(){
     const el = document.getElementById('confirmLine');
     if(el){
       // הסכום כאן הוא בדיוק סכום העמודות בטבלה שמתחת, בלי ה"ללא מוקד".
-      let html = `אישורי הגעה (נכון ל־12/10): <b style="color:#0a8f6f">${heNum(tot.yes)}</b> משתתפים אישרו · `+
+      let html = `אישורי הגעה${ASOF ? ' (נכון ל־'+ASOF+')' : ''}: <b style="color:#0a8f6f">${heNum(tot.yes)}</b> משתתפים אישרו · `+
                  `<b style="color:#c0392b">${heNum(tot.no)}</b> ביטלו · ${heNum(tot.none)} טרם השיבו`;
       if(fieldSites.length){
         html += `<div style="margin-top:6px;color:var(--warn);font-weight:700">`+
