@@ -1,14 +1,18 @@
 # -*- coding: utf-8 -*-
 """Readable name lists per site: who registered, as names rather than figures.
 
-The workbook from build_sitebook.py is for filtering and counting. This is the
-version you print and hand to a site leader: site heading, then the people.
+build_sitebook.py is the wide analytical workbook (8 columns, summary first).
+This is the stripped version: name, phone, headcount, status. Nothing else.
 
-Writes two files, both PII and gitignored:
+Writes three files, all PII and gitignored:
+  שמות לפי מוקד.xlsx  - tab per site, names only, opens on the first site
   שמות לפי מוקד.docx  - printable, one site per page
   שמות לפי מוקד.txt   - plain text for pasting into WhatsApp or mail
 """
 import collections
+from openpyxl import Workbook
+from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+from openpyxl.utils import get_column_letter
 from docx import Document
 from docx.shared import Pt, RGBColor, Cm
 from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_BREAK
@@ -125,6 +129,79 @@ doc.save('שמות לפי מוקד.docx')
 with open('שמות לפי מוקד.txt', 'w', encoding='utf-8-sig') as f:
     f.write('\n'.join(lines))
 
-print('נכתבו: שמות לפי מוקד.docx · שמות לפי מוקד.txt')
+# ---------- the same lists as a workbook ----------
+HEAD_FILL = PatternFill('solid', fgColor='0871B9')
+HEAD_FONT = Font(bold=True, color='FFFFFF', size=11, name='Assistant')
+TITLE = Font(bold=True, size=15, color='055A95', name='Assistant')
+SUB = Font(size=10, color='5B6B78', name='Assistant')
+NAME = Font(bold=True, size=11, name='Assistant')
+NAME_YES = Font(bold=True, size=11, name='Assistant', color='0A8F6F')
+NAME_NO = Font(size=11, name='Assistant', color='999999', italic=True)
+BODY = Font(size=11, name='Assistant')
+GREY = Font(size=11, name='Assistant', color='999999', italic=True)
+THIN = Border(bottom=Side('thin', color='DDE6ED'))
+NCOLS = [('שם', 30), ('טלפון', 15), ('משתתפים', 11), ('סטטוס', 22)]
+BAD = set(r':\/?*[]')
+
+
+def tab_name(raw, used):
+    n = ''.join(' ' if c in BAD else c for c in raw).strip()[:31] or 'מוקד'
+    base, i = n, 2
+    while n in used:
+        sfx = ' %d' % i
+        n = base[:31 - len(sfx)] + sfx
+        i += 1
+    used.add(n)
+    return n
+
+
+wb = Workbook()
+wb.remove(wb.active)                 # no summary sheet: this file is the names
+used = set()
+for site, rows in order:
+    rows = sorted(rows, key=lambda x: (-x['people'], x['name']))
+    ppl = sum(x['people'] for x in rows)
+    ov = site_totals.get(site)
+    ws = wb.create_sheet(tab_name(site, used))
+    ws.sheet_view.rightToLeft = True
+
+    ws['A1'] = site
+    ws['A1'].font = TITLE
+    meta = ('צפי מהשטח: %d מגיעים' % ov[0]) if ov else \
+           ('%d אישרו · %d ביטלו'
+            % (sum(x['people'] for x in rows if status.get(x['phone']) == 'מאשר'),
+               sum(x['people'] for x in rows if status.get(x['phone']) == 'מסרב')))
+    ws['A2'] = '%d נרשמים · %d משתתפים · %s · נכון ל־%s' % (len(rows), ppl, meta, ASOF)
+    ws['A2'].font = SUB
+
+    for c, (h, w) in enumerate(NCOLS, start=1):
+        cell = ws.cell(row=4, column=c, value=h)
+        cell.fill, cell.font = HEAD_FILL, HEAD_FONT
+        cell.alignment = Alignment(horizontal='center')
+        ws.column_dimensions[get_column_letter(c)].width = w
+    ws.freeze_panes = 'A5'
+
+    for i, x in enumerate(rows, start=5):
+        st = status_of(x)
+        cells = [x['name'] or '(ללא שם)', x['phone'], x['people'], st]
+        for c, v in enumerate(cells, start=1):
+            cell = ws.cell(row=i, column=c, value=v)
+            cell.border = THIN
+            if c == 1:
+                cell.font = NAME_YES if st == 'אישר/ה' else (
+                    NAME_NO if st == 'ביטל/ה' else NAME)
+            else:
+                cell.font = GREY if st == 'ביטל/ה' else BODY
+            if c == 2:
+                cell.number_format = '@'       # keep the leading zero
+                cell.alignment = Alignment(horizontal='left')
+            elif c == 3:
+                cell.alignment = Alignment(horizontal='center')
+    ws.auto_filter.ref = 'A4:%s%d' % (get_column_letter(len(NCOLS)), 4 + len(rows))
+
+wb.active = 0                        # open on the largest site, not a summary
+wb.save('שמות לפי מוקד.xlsx')
+
+print('נכתבו: שמות לפי מוקד.xlsx · .docx · .txt')
 print('%d מוקדים · %d נרשמים · %d משתתפים'
       % (len(order), len(regs), sum(x['people'] for x in regs)))
